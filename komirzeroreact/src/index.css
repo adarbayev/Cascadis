@@ -1,0 +1,24 @@
+/* Ensures smooth scrolling for anchor links if needed */
+html { scroll-behavior: smooth; }
+
+/* Basic body styles */
+html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #f0fdfa; /* emerald-50 */
+    overflow-x: hidden; /* Prevent horizontal scroll */
+    color: #3f3f46; /* zinc-700 */
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Root element should take full height */
+#root {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+} 
