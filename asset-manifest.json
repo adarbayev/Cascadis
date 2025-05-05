@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/komir-zero-react/static/css/main.0a7a45b4.css",
-    "main.js": "/komir-zero-react/static/js/main.1bd1e5ab.js",
+    "main.css": "/komir-zero-react/static/css/main.56c535d3.css",
+    "main.js": "/komir-zero-react/static/js/main.deafc6bb.js",
     "index.html": "/komir-zero-react/index.html",
-    "main.0a7a45b4.css.map": "/komir-zero-react/static/css/main.0a7a45b4.css.map",
-    "main.1bd1e5ab.js.map": "/komir-zero-react/static/js/main.1bd1e5ab.js.map"
+    "main.56c535d3.css.map": "/komir-zero-react/static/css/main.56c535d3.css.map",
+    "main.deafc6bb.js.map": "/komir-zero-react/static/js/main.deafc6bb.js.map"
   },
   "entrypoints": [
-    "static/css/main.0a7a45b4.css",
-    "static/js/main.1bd1e5ab.js"
+    "static/css/main.56c535d3.css",
+    "static/js/main.deafc6bb.js"
   ]
 }
