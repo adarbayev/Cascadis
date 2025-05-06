@@ -1,0 +1,258 @@
+.indicator-table-container {
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.table-header h2 {
+  margin: 0;
+}
+
+.table-header div {
+  display: flex;
+  gap: 10px;
+}
+
+.add-button, .reset-button {
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  min-width: 90px;
+  text-align: center;
+  height: 36px;
+  line-height: 20px;
+  box-sizing: border-box;
+}
+
+.add-button {
+  background-color: #4CAF50;
+}
+
+.add-button:hover {
+  background-color: #45a049;
+}
+
+.reset-button {
+  background-color: #f0ad4e;
+}
+
+.reset-button:hover {
+  background-color: #ec971f;
+}
+
+.indicator-section {
+  background-color: #f9f9f9;
+  border-radius: 6px;
+  padding: 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.section-header {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 8px;
+}
+
+.indicator-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.indicator-table th {
+  background-color: #f2f2f2;
+  text-align: left;
+  padding: 12px 15px;
+  font-weight: 600;
+  color: #555;
+  border-bottom: 1px solid #ddd;
+}
+
+.indicator-table td {
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.indicator-table tr:last-child td {
+  border-bottom: none;
+}
+
+.indicator-table tr:hover {
+  background-color: #f5f5f5;
+}
+
+.actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.actions button {
+  margin-left: 8px;
+  padding: 5px 6px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.2s;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.actions button:hover {
+  background-color: #F3F4F6;
+}
+
+.actions button.delete {
+  color: #d9534f;
+  border-color: #d9534f;
+  background-color: white;
+  border-width: 1px;
+}
+
+.actions button.delete:hover {
+  background-color: #fff0f0;
+}
+
+/* Form styles */
+.indicator-form {
+  background-color: #fff;
+  border-radius: 6px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.indicator-form h3 {
+  margin-top: 0;
+  margin-bottom: 16px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 8px;
+  color: #333;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+  color: #555;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-group input:disabled {
+  background-color: #f9f9f9;
+  color: #777;
+}
+
+/* Style for emission factor dropdown */
+.emission-factor-select {
+  height: auto !important;
+}
+
+.emission-factor-select option {
+  padding: 8px 10px;
+}
+
+select.emission-factor-select:focus {
+  height: auto !important;
+  min-height: 200px !important; /* Show at least 5 items */
+  overflow-y: auto !important;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.form-actions button {
+  margin-left: 10px;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  background-color: #f0f0f0;
+}
+
+.form-actions button.primary {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.form-actions button:hover {
+  opacity: 0.9;
+}
+
+/* Conversion section */
+.conversion-section {
+  margin-bottom: 15px;
+  border: 1px solid #eee;
+  border-radius: 4px;
+}
+
+.conversion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  border-radius: 4px 4px 0 0;
+}
+
+.conversion-header h4 {
+  margin: 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.conversion-header span {
+  color: #777;
+}
+
+.conversion-section .form-group {
+  padding: 15px;
+  margin-bottom: 0;
+  border-top: 1px solid #eee;
+}
+
+.warning-text {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 5px;
+  padding: 5px;
+  background-color: rgba(220, 53, 69, 0.1);
+  border-radius: 4px;
+} 

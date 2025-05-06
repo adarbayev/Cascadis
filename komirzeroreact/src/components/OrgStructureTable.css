@@ -1,0 +1,327 @@
+/* Organization Structure Container */
+.org-structure-container {
+  font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+  width: 100%;
+}
+
+/* Tree View Styles */
+.org-tree {
+  margin-top: 1rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.org-node-container {
+  margin-bottom: 0.25rem;
+}
+
+.org-node {
+  display: flex;
+  align-items: stretch;
+  border-radius: 4px;
+  background-color: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s ease;
+}
+
+.org-node:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.org-node-header {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  width: 100%;
+}
+
+/* Level Styles */
+.level-0 {
+  border-left: 4px solid #0066CC; /* Blue for Group */
+}
+
+.level-1 {
+  border-left: 4px solid #FFA500; /* Orange for Legal Entity */
+}
+
+.level-2 {
+  border-left: 4px solid #00A651 !important; /* Green for Site */
+  background-clip: padding-box;
+}
+
+/* Node Content Styles */
+.node-type {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+  margin-right: 0.75rem;
+  color: white;
+  min-width: 70px;
+  text-align: center;
+}
+
+.type-group {
+  background-color: #0066CC;
+}
+
+.type-legal-entity {
+  background-color: #FFA500;
+}
+
+.type-site, .type-office, .type-warehouse, .type-production-site {
+  background-color: #00A651;
+}
+
+.node-code {
+  font-family: monospace;
+  font-size: 0.875rem;
+  color: #6B7280;
+  margin-right: 1rem;
+  min-width: 60px;
+}
+
+.node-name {
+  font-size: 0.95rem;
+  color: #1F2937;
+  font-weight: 500;
+  flex: 1;
+}
+
+/* Children Container */
+.org-node-children {
+  margin-left: 12px;
+}
+
+/* Expand/Collapse Button */
+.expand-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #6B7280;
+  margin-right: 0.5rem;
+  padding: 0;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.expand-button:hover {
+  color: #374151;
+}
+
+/* Icon styles */
+.icon {
+  font-size: 14px;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  line-height: 1;
+  text-align: center;
+}
+
+.add-icon {
+  font-weight: bold;
+  font-size: 16px;
+  color: #4CAF50;
+}
+
+.edit-icon {
+  font-size: 14px;
+  color: #6B7280;
+}
+
+.delete-icon {
+  font-size: 18px;
+  font-weight: bold;
+  color: #d9534f;
+}
+
+/* Node Actions */
+.node-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.edit-button, .delete-button {
+  background-color: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 4px;
+  padding: 0.375rem;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+}
+
+/* Separate add-button styling */
+.add-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border: 1px solid #4CAF50;
+  color: #4CAF50;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+}
+
+.add-button:hover {
+  background-color: #f0fff0;
+}
+
+.edit-button:hover {
+  background-color: #F3F4F6;
+  border-color: #D1D5DB;
+}
+
+.delete-button {
+  color: #d9534f;
+  border-color: #d9534f;
+  border-width: 1px;
+}
+
+.delete-button:hover {
+  background-color: #fff0f0;
+}
+
+/* Form Overlay */
+.form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.form-container {
+  background-color: white;
+  border-radius: 8px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.form-container h2 {
+  color: #1F2937;
+  font-size: 1.25rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #E5E7EB;
+}
+
+/* Form Controls */
+.form-group {
+  margin-bottom: 1.25rem;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 0.5rem;
+}
+
+.form-control {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #D1D5DB;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  color: #1F2937;
+  transition: border-color 0.2s ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: #60A5FA;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.15);
+}
+
+.form-control::placeholder {
+  color: #9CA3AF;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 2rem;
+}
+
+.save-button, .cancel-button {
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.save-button {
+  background-color: #10B981;
+  color: white;
+  border: none;
+}
+
+.save-button:hover {
+  background-color: #059669;
+}
+
+.cancel-button {
+  background-color: white;
+  color: #4B5563;
+  border: 1px solid #E5E7EB;
+}
+
+.cancel-button:hover {
+  background-color: #F3F4F6;
+  border-color: #D1D5DB;
+}
+
+/* Add Group button at top level */
+.add-group-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border: 1px solid #4CAF50;
+  color: #4CAF50;
+  border-radius: 4px;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 1rem;
+  padding: 0;
+}
+
+.add-group-button:hover {
+  background-color: #f0fff0;
+} 
