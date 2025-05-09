@@ -17,23 +17,58 @@ const getInitialData = () => {
     {
       id: 'g1',
       type: 'Group',
-      code: 'G001',
-      name: 'Group 1',
+      code: 'NOG001',
+      name: 'NAT OIL GROUP',
       children: [
         {
           id: 'le1',
           type: 'Legal Entity',
-          code: 'LE001',
-          name: 'Legal Entity 1',
+          code: 'NOW001',
+          name: 'NAT OIL WEST',
           children: [
             {
               id: 's1',
               type: 'Site',
-              code: 'S001',
-              name: 'Site 1',
-              country: 'US',
-              latitude: 40.7,
-              longitude: -74.0
+              code: 'NOWO001',
+              name: 'NAT OIL WEST OFFICE',
+              country: 'Romania',
+              latitude: 44.4268,
+              longitude: 26.1025
+            },
+            {
+              id: 's2',
+              type: 'Site',
+              code: 'NOWF001',
+              name: 'NAT OIL WEST FIELD',
+              country: 'Romania',
+              latitude: 45.7538,
+              longitude: 26.8212
+            }
+          ]
+        },
+        {
+          id: 'le2',
+          type: 'Legal Entity',
+          code: 'NOE001',
+          name: 'NAT OIL EAST',
+          children: [
+            {
+              id: 's3',
+              type: 'Site',
+              code: 'NOEO001',
+              name: 'NAT OIL EAST OFFICE',
+              country: 'Kazakhstan',
+              latitude: 43.2551,
+              longitude: 76.9126
+            },
+            {
+              id: 's4',
+              type: 'Site',
+              code: 'NOEF001',
+              name: 'NAT OIL EAST FIELD',
+              country: 'Kazakhstan',
+              latitude: 47.1211,
+              longitude: 51.8766
             }
           ]
         }

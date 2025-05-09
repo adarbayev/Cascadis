@@ -41,7 +41,7 @@ const getInitialData = () => {
     {
       id: 'ef.001',
       name: 'Diesel (1L)',
-      value: 2.66, // kg CO2e per kWh
+      value: 0.26808, // kg CO2e per kWh
       scope_tag: 'scope1',
       source_comment: 'DEFRA 2024',
       created_at: new Date().toISOString(),
@@ -50,7 +50,7 @@ const getInitialData = () => {
     {
       id: 'ef.002',
       name: 'Petrol (1L)',
-      value: 2.33, // kg CO2e per kWh
+      value: 0.28523, // kg CO2e per kWh
       scope_tag: 'scope1',
       source_comment: 'DEFRA 2024',
       created_at: new Date().toISOString(),
@@ -59,7 +59,7 @@ const getInitialData = () => {
     {
       id: 'ef.003',
       name: 'Coal (1t)',
-      value: 2399.43, // kg CO2e per kWh
+      value: 0.333, // kg CO2e per kWh
       scope_tag: 'scope1',
       source_comment: 'DEFRA 2024',
       created_at: new Date().toISOString(),
@@ -68,7 +68,7 @@ const getInitialData = () => {
     {
       id: 'ef.004',
       name: 'Natural gas (1m³)',
-      value: 2.02, // kg CO2e per kWh
+      value: 0.202, // kg CO2e per kWh
       scope_tag: 'scope1',
       source_comment: 'DEFRA 2024',
       created_at: new Date().toISOString(),
@@ -159,6 +159,32 @@ function EmissionFactorTable() {
     // Dispatch a storage event so other components can react to the change
     window.dispatchEvent(new Event('storage'));
   }, [emissionFactors]);
+
+  // Check for reset flag on mount and storage changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      // Check for reset flag
+      if (localStorage.getItem('resetEmissionFactors') === 'true') {
+        console.log('Reset emission factors flag detected, resetting data...');
+        localStorage.removeItem('emissionFactorData');
+        setEmissionFactors(getInitialData());
+        localStorage.removeItem('resetEmissionFactors');
+      }
+    };
+
+    // Initial check for reset flag on mount
+    if (localStorage.getItem('resetEmissionFactors') === 'true') {
+      console.log('Reset emission factors flag detected on mount, resetting data...');
+      localStorage.removeItem('emissionFactorData');
+      setEmissionFactors(getInitialData());
+      localStorage.removeItem('resetEmissionFactors');
+    }
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   // Reset data to seed values
   const handleResetData = () => {

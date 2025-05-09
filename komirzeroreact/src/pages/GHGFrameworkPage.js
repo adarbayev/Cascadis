@@ -15,12 +15,6 @@ const GHGFrameworkPage = () => {
         return <ConversionFactorTable />;
       case 'emissionFactors':
         return <EmissionFactorTable />;
-      case 'calculations':
-        return (
-          <div className="placeholder-content">
-            <p>Calculation logic will be available here.</p>
-          </div>
-        );
       default:
         return null;
     }
@@ -48,12 +42,6 @@ const GHGFrameworkPage = () => {
           onClick={() => setActiveTab('emissionFactors')}
         >
           Emission Factors
-        </button>
-        <button 
-          className={`tab-button ${activeTab === 'calculations' ? 'active' : ''}`}
-          onClick={() => setActiveTab('calculations')}
-        >
-          Calculations
         </button>
       </div>
       

@@ -110,6 +110,32 @@ function ConversionFactorTable() {
     window.dispatchEvent(new Event('storage'));
   }, [conversionFactors]);
 
+  // Check for reset flag on mount and storage changes
+  useEffect(() => {
+    const handleStorageChange = () => {
+      // Check for reset flag
+      if (localStorage.getItem('resetConversionFactors') === 'true') {
+        console.log('Reset conversion factors flag detected, resetting data...');
+        localStorage.removeItem('conversionFactorData');
+        setConversionFactors(getInitialData());
+        localStorage.removeItem('resetConversionFactors');
+      }
+    };
+
+    // Initial check for reset flag on mount
+    if (localStorage.getItem('resetConversionFactors') === 'true') {
+      console.log('Reset conversion factors flag detected on mount, resetting data...');
+      localStorage.removeItem('conversionFactorData');
+      setConversionFactors(getInitialData());
+      localStorage.removeItem('resetConversionFactors');
+    }
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
+
   // Reset data to seed values
   const handleResetData = () => {
     if (window.confirm('Are you sure you want to reset all conversion factors to default values? This cannot be undone.')) {

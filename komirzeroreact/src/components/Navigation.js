@@ -22,7 +22,7 @@ const Navigation = ({ activeSection, setActiveSection }) => {
     { 
       id: 'ghg-framework', 
       label: 'GHG Framework',
-      icon: '🌱' // Plant icon (representing sustainability)
+      icon: '🌱' // Plant icon
     },
     { 
       id: 'data-collection', 
@@ -30,9 +30,14 @@ const Navigation = ({ activeSection, setActiveSection }) => {
       icon: '📝' // Clipboard icon
     },
     { 
+      id: 'analysis', 
+      label: 'Analysis',
+      icon: '📈' // Line graph icon
+    },
+    { 
       id: 'reporting', 
       label: 'Reporting',
-      icon: '📈' // Chart trending up
+      icon: '📄' // Document icon
     },
     { 
       id: 'settings', 
