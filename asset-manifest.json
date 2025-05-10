@@ -1,10 +1,10 @@
 {
   "files": {
-    "main.css": "/cascadis-react/static/css/main.4ee71763.css",
-    "main.js": "/cascadis-react/static/js/main.6a2cf912.js",
-    "index.html": "/cascadis-react/index.html",
-    "main.4ee71763.css.map": "/cascadis-react/static/css/main.4ee71763.css.map",
-    "main.6a2cf912.js.map": "/cascadis-react/static/js/main.6a2cf912.js.map"
+    "main.css": "/Cascadis/static/css/main.4ee71763.css",
+    "main.js": "/Cascadis/static/js/main.6a2cf912.js",
+    "index.html": "/Cascadis/index.html",
+    "main.4ee71763.css.map": "/Cascadis/static/css/main.4ee71763.css.map",
+    "main.6a2cf912.js.map": "/Cascadis/static/js/main.6a2cf912.js.map"
   },
   "entrypoints": [
     "static/css/main.4ee71763.css",
