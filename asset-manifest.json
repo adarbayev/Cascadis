@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/komir-zero-react/static/css/main.45b071c3.css",
-    "main.js": "/komir-zero-react/static/js/main.2d214fed.js",
-    "index.html": "/komir-zero-react/index.html",
-    "main.45b071c3.css.map": "/komir-zero-react/static/css/main.45b071c3.css.map",
-    "main.2d214fed.js.map": "/komir-zero-react/static/js/main.2d214fed.js.map"
+    "main.css": "/cascadis-react/static/css/main.4ee71763.css",
+    "main.js": "/cascadis-react/static/js/main.6a2cf912.js",
+    "index.html": "/cascadis-react/index.html",
+    "main.4ee71763.css.map": "/cascadis-react/static/css/main.4ee71763.css.map",
+    "main.6a2cf912.js.map": "/cascadis-react/static/js/main.6a2cf912.js.map"
   },
   "entrypoints": [
-    "static/css/main.45b071c3.css",
-    "static/js/main.2d214fed.js"
+    "static/css/main.4ee71763.css",
+    "static/js/main.6a2cf912.js"
   ]
 }
