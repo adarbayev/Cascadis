@@ -1,0 +1,9 @@
+.save-button {
+  background-color: #10b981; /* Standard green */
+  color: white;
+  /* Ensure other properties like padding, border, border-radius, cursor, font-weight are consistent or inherited */
+}
+
+.save-button:hover {
+  background-color: #059669; /* Darker green for hover */
+} 

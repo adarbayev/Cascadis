@@ -24,7 +24,7 @@
 .nav-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #065f46; /* emerald-800 */
+  color: #172554;
   margin: 0;
 }
 
@@ -66,14 +66,18 @@
 }
 
 .nav-item:hover {
-  background-color: #f8fafc; /* slate-50 */
-  color: #065f46; /* emerald-800 */
+  background-color: rgba(37,99,235,0.08); /* transparent blue */
+  color: #2563eb;
 }
 
 .nav-item.active {
-  background-color: #ecfdf5; /* emerald-50 */
-  color: #059669; /* emerald-600 */
-  border-left-color: #10b981; /* emerald-500 */
+  background-color: #e0e7ff; /* light navy/blue background */
+  color: #2563eb;
+  border-left: 4px solid #2563eb;
+}
+
+.nav-item.active .nav-icon {
+  color: #2563eb;
 }
 
 .nav-footer {

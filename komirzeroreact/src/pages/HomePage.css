@@ -2,11 +2,8 @@
   padding: 1rem;
 }
 
-.page-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #1f2937; /* gray-800 */
-  margin-bottom: 1.5rem;
+.page-title, .metric-title, .section-header {
+  color: #172554 !important;
 }
 
 .tab-container {
@@ -57,4 +54,455 @@
   color: #6b7280; /* gray-500 */
   font-size: 1.1rem;
   font-weight: 500;
+}
+
+.home-page-reimagined {
+  padding: 20px;
+  background-color: #f0f2f5; /* Light grey background for the page */
+}
+
+.page-title {
+  margin-bottom: 24px;
+  font-size: 1.875rem; /* Larger font size */
+  font-weight: 700; /* Bolder */
+}
+
+.map-section-container { /* Renamed for clarity */
+  margin-bottom: 24px;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  background-color: #fff; /* White background for map container */
+}
+
+.dashboard-layout-grid { /* New grid for elements below the map */
+  display: grid;
+  gap: 1.5rem; /* 24px */
+  /* Define grid areas for a Power BI like structure */
+  grid-template-areas:
+    "kpi1 kpi2 kpi3 kpi3"  /* Row for key metrics, kpi3 spans 2 cols */
+    "pieChart bar1Chart bar1Chart bar1Chart" /* Pie chart and a bar chart */
+    "bar2Chart bar2Chart bar2Chart bar2Chart"; /* Another bar chart spanning full */
+  grid-template-columns: repeat(4, 1fr); /* 4 equal columns */
+}
+
+/* Styling for individual grid items (cards) */
+.grid-item {
+  background-color: #ffffff;
+  padding: 1.5rem; /* 24px */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  /* Add transitions or other visual cues if desired */
+}
+
+/* Assign grid areas to specific items */
+.item-map { grid-area: map; } /* This would be if map is part of this grid */
+.item-kpi-scope1 { grid-area: kpi1; }
+.item-kpi-scope2 { grid-area: kpi2; }
+.item-kpi-total { grid-area: kpi3; }
+
+.item-scope-pie { grid-area: pieChart; }
+.item-scope1-detail { grid-area: bar1Chart; }
+.item-scope2-detail { grid-area: bar2Chart; }
+
+/* Key Metric Card specific styling for a more "Power BI" feel */
+.metric-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Center align content */
+  justify-content: center;
+  text-align: center;
+  padding: 1rem; /* Adjust padding */
+  height: 100%; /* Make cards fill their grid area height */
+}
+
+.metric-title {
+  font-size: 0.875rem; /* 14px */
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.metric-value {
+  font-size: 2.25rem; /* 36px, large digits */
+  font-weight: 700; /* Bold */
+  line-height: 1;
+}
+
+.metric-unit {
+  font-size: 0.875rem;
+  margin-left: 0.25rem;
+  font-weight: 400;
+}
+
+/* Specific colors for KPI cards if desired */
+.scope1-card .metric-value { color: #e53e3e; /* Redish */ }
+.scope2-card .metric-value { color: #3182ce; /* Bluish */ }
+.total-card .metric-value { color: #38a169; /* Greenish */ }
+
+
+/* Placeholder for charts if no data */
+.placeholder-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 150px; /* Ensure placeholder has some height */
+  color: #a0aec0; /* Gray-500 */
+  font-style: italic;
+}
+
+/* Chart container within grid items */
+.chart-container {
+  height: 250px; /* Default height, can be overridden or made responsive */
+  position: relative;
+}
+
+/* Responsive adjustments for the layout grid */
+@media (max-width: 1024px) { /* For tablets */
+  .dashboard-layout-grid {
+    grid-template-areas:
+      "kpi1 kpi2"
+      "kpi3 kpi3"
+      "pieChart pieChart"
+      "bar1Chart bar1Chart"
+      "bar2Chart bar2Chart";
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 640px) { /* For mobile */
+  .dashboard-layout-grid {
+    grid-template-areas:
+      "kpi1"
+      "kpi2"
+      "kpi3"
+      "pieChart"
+      "bar1Chart"
+      "bar2Chart";
+    grid-template-columns: 1fr;
+  }
+  .metric-value {
+    font-size: 1.875rem; /* Slightly smaller for mobile */
+  }
+}
+
+.home-page-reimagined .dashboard-item-editable {
+  border: 2px dashed #7c3aed; /* A vibrant purple for edit mode */
+  position: relative; /* Needed for positioning pseudo-elements or icon divs */
+  transition: border-color 0.3s ease-in-out;
+}
+
+/* Placeholder for actual icons/handles */
+.home-page-reimagined .edit-overlay-icons::before, 
+.home-page-reimagined .edit-overlay-icons::after {
+  content: '';
+  position: absolute;
+  background-color: #7c3aed;
+  opacity: 0.7;
+}
+
+/* Placeholder for a resize handle (bottom-right) */
+.home-page-reimagined .edit-overlay-icons::after {
+  width: 12px;
+  height: 12px;
+  right: -1px; /* Adjust to be slightly outside or on the border */
+  bottom: -1px;
+  cursor: se-resize; /* Suggests resizability */
+  border-top-left-radius: 100%; /* Makes a quarter circle, crude handle */
+}
+
+/* Placeholder for a move handle (top-left) - could use an SVG icon here ideally */
+.home-page-reimagined .edit-overlay-icons::before {
+  width: 18px;
+  height: 18px;
+  left: 4px;
+  top: 4px;
+  cursor: move; /* Suggests movability */
+  /* Basic move icon representation using borders or a character */
+  /* Using a simple box for now, an SVG would be better */
+   border-radius: 3px;
+}
+
+/* Optional: Style for the KeyMetricCards, Charts, etc. when inside an editable container if needed */
+/* For example, to ensure they don't overlap the placeholder icons if padding is not enough */
+.home-page-reimagined .dashboard-item-editable > div {
+  /* Add padding if direct children need to not overlap the icons */
+  /* padding: 5px; */ 
+}
+
+/* Ensure chart containers and other elements within editable sections behave well */
+.home-page-reimagined .dashboard-item-editable .chart-container,
+.home-page-reimagined .dashboard-item-editable .site-emissions-map-container,
+.home-page-reimagined .dashboard-item-editable .esg-news-panel {
+  /* height: calc(100% - 10px); /* Example to prevent overflow if padding is added */
+  /* width: calc(100% - 10px); */
+}
+
+/* Existing styles for HomePage.css can remain below or be merged */
+.metric-card {
+  padding: 1rem;
+  border-radius: 0.5rem;
+  color: white;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.metric-title {
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500; /* font-medium */
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.metric-value {
+  font-size: 1.875rem; /* text-3xl */
+  font-weight: 700; /* font-bold */
+  margin-top: 0.25rem;
+}
+
+.metric-unit {
+  font-size: 1rem; /* text-base */
+  font-weight: 500;
+}
+
+.chart-container {
+  background-color: #ffffff;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  height: 100%; /* Ensure it tries to fill parent */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Styles for SiteEmissionsMap if they were in HomePage.css directly */
+.site-emissions-map-container {
+  height: 100%; /* Ensure map container tries to fill its parent */
+  width: 100%;
+}
+
+/* Styles for ESGNewsPanel if they were in HomePage.css directly */
+.esg-news-panel {
+  /* Ensure panel takes full height of its grid cell if not already */
+  /* height: 100%; */ 
+}
+
+/* Modern Dashboard Layout */
+.home-page-modern {
+  padding: 20px;
+  background-color: #f0f2f5;
+}
+
+.piechart-small-container {
+  width: 160px;
+  height: 160px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.kpi-card-modern {
+  min-width: 180px;
+  max-width: 220px;
+  flex: 1 1 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.2rem 0.5rem;
+}
+
+.site-emissions-map-modern {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.map-modern-container {
+  width: 100%;
+  min-width: 0;
+  min-height: 340px;
+  height: 400px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: none;
+}
+
+.breakdowns-row-modern {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
+.breakdown-modern {
+  flex: 1 1 0;
+  min-width: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 1rem 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 260px;
+}
+
+@media (max-width: 900px) {
+  .map-modern-container, .breakdowns-row-modern {
+    max-width: 100%;
+  }
+  .breakdowns-row-modern {
+    flex-direction: column !important;
+    gap: 1.5rem;
+  }
+  .breakdown-modern {
+    height: 220px;
+  }
+}
+
+@media (max-width: 600px) {
+  .piechart-small-container {
+    width: 120px;
+    height: 120px;
+  }
+  .map-modern-container {
+    height: 220px;
+    min-height: 180px;
+    padding: 2px;
+  }
+  .breakdown-modern {
+    height: 140px;
+    padding: 0.5rem 0.2rem;
+  }
+  .kpi-card-modern {
+    min-width: 100px;
+    max-width: 100%;
+    padding: 0.7rem 0.2rem;
+  }
+}
+
+/* Two-column dashboard layout */
+.dashboard-main-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 2.5rem;
+  width: 100%;
+  max-width: none;
+}
+
+.dashboard-left-col {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+  max-width: none;
+}
+
+.dashboard-right-col {
+  width: 300px;
+  min-width: 300px;
+  max-width: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.esg-news-panel-wrapper {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+  padding: 1.2rem 1rem;
+  min-height: 400px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+@media (max-width: 1100px) {
+  .dashboard-main-row {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .dashboard-right-col {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 700px) {
+  .dashboard-left-col {
+    gap: 1rem;
+  }
+  .esg-news-panel-wrapper {
+    min-height: 220px;
+    padding: 0.7rem 0.5rem;
+  }
+}
+
+.pie-map-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  height: 400px; /* Match .map-modern-container */
+  width: 100%;
+}
+
+.piechart-square-container {
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  min-width: 0;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 900px) {
+  .pie-map-row {
+    flex-direction: column;
+    height: auto;
+    gap: 1rem;
+  }
+  .piechart-square-container {
+    width: 100%;
+    max-width: 340px;
+    height: 340px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .piechart-square-container {
+    max-width: 180px;
+    height: 180px;
+  }
+}
+
+.kpi-card-modern.bg-green-600 {
+  background-color: #2563eb !important;
+}
+.kpi-card-modern.bg-green-600:hover {
+  background-color: rgba(37,99,235,0.08) !important;
+  color: #2563eb !important;
+}
+
+.total-card .metric-value {
+  color: #2563eb !important;
 } 

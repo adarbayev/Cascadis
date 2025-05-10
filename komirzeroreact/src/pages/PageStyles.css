@@ -59,4 +59,83 @@
   min-height: 200px;
   background-color: #f9fafb; /* gray-50 */
   border-radius: 0.5rem;
+}
+
+/* Modern Reporting Page Styles */
+.reporting-modern {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 2rem;
+}
+
+.reporting-buttons-row {
+  display: flex;
+  flex-direction: row;
+  gap: 2.5rem;
+  margin: 2.5rem 0 1.5rem 0;
+  justify-content: center;
+}
+
+.reporting-big-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 170px;
+  height: 170px;
+  border-radius: 1.5rem;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.09);
+  border: 2px solid #e5e7eb;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: box-shadow 0.2s, border-color 0.2s, transform 0.2s;
+  position: relative;
+}
+.reporting-big-btn:hover {
+  box-shadow: 0 8px 24px rgba(59,130,246,0.13);
+  border-color: #3b82f6;
+  transform: translateY(-4px) scale(1.04);
+}
+
+.reporting-btn-icon {
+  font-size: 2.7rem;
+  font-weight: bold;
+  margin-bottom: 1.1rem;
+  color: #3b82f6;
+}
+.cdp .reporting-btn-icon { color: #ef4444; }
+.gri .reporting-btn-icon { color: #10b981; }
+.csrd .reporting-btn-icon { color: #f59e0b; }
+
+.reporting-btn-label {
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: #374151;
+}
+
+.reporting-disclaimer {
+  font-size: 0.95rem;
+  color: #6b7280;
+  text-align: center;
+  margin-top: 2rem;
+}
+
+@media (max-width: 700px) {
+  .reporting-buttons-row {
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: center;
+  }
+  .reporting-big-btn {
+    width: 100%;
+    max-width: 320px;
+    height: 120px;
+    font-size: 1rem;
+  }
+  .reporting-btn-icon {
+    font-size: 2rem;
+    margin-bottom: 0.7rem;
+  }
 } 

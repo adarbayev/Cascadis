@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import './PageStyles.css';
 import '../components/dashboard/TrajectoryDashboard.css';
 import { ORG_STRUCTURE, INDICATORS, NODE_INDICATOR_MAPPING, INVENTORY_YEARS, QUESTIONNAIRE_DATA, CONVERSION_FACTORS, EMISSION_FACTORS } from '../demoData';
@@ -12,8 +12,12 @@ import {
   BarElement,
   Title,
   Tooltip,
-  Legend
+  Legend,
+  Filler
 } from 'chart.js';
+import { BubblePayoffChart } from '../components/charts/BubblePayoffChart';
+import { SCOPE1_NAMES, SCOPE2_NAMES } from '../utils/ghgConstants';
+import { flattenNodesSite } from '../utils/arrayUtils';
 
 ChartJS.register(
   CategoryScale, 
@@ -23,25 +27,14 @@ ChartJS.register(
   BarElement,
   Title, 
   Tooltip, 
-  Legend
+  Legend,
+  Filler
 );
-
-const SCOPE1_NAMES = ['Diesel', 'Petrol', 'Coal', 'Natural gas'];
-const SCOPE2_NAMES = ['Electricity', 'District heat', 'Steam', 'Cooling'];
-
-const flattenNodes = (nodes, arr = []) => {
-  nodes.forEach(node => {
-    if (node.type === 'Site') arr.push(node);
-    if (node.children) flattenNodes(node.children, arr);
-  });
-  return arr;
-};
 
 const indicatorById = (id) => INDICATORS.find(i => i.id === id);
 const getConversionFactorById = (id) => CONVERSION_FACTORS.find(cf => cf.id === id);
 const getEmissionFactorById = (id) => EMISSION_FACTORS.find(ef => ef.id === id);
 
-// Match DataCollectionPage logic exactly
 function calcGHG(indicator, value, unit) {
   if (!value || isNaN(value)) return 0;
   let conv = 1;
@@ -54,18 +47,16 @@ function calcGHG(indicator, value, unit) {
     const efObj = getEmissionFactorById(indicator.emission_factor_id);
     if (efObj) ef = efObj.value;
   }
-  // Multiply by 2 for electricity, heat, steam, cooling
   const multiplyNames = ['Electricity', 'District heat', 'Steam', 'Cooling'];
   let adjustedValue = parseFloat(value);
   if (multiplyNames.includes(indicator.name)) {
     adjustedValue = adjustedValue * 2;
   }
-  // Use parseFloat and .toFixed(2) as in DataCollectionPage
   return parseFloat((adjustedValue * conv * ef).toFixed(2));
 }
 
 function sumEmissionsByScope(yearId, sessionEmissions) {
-  const sites = flattenNodes(ORG_STRUCTURE);
+  const sites = flattenNodesSite(ORG_STRUCTURE);
   let scope1 = 0, scope2 = 0;
   let split = { scope1: {}, scope2: {} };
   for (const site of sites) {
@@ -146,9 +137,8 @@ const PencilIcon = () => (
   </svg>
 );
 
-// Helper to get baseline emissions by scope and by site
 function getBaselineByScopeAndSite(yearId, sessionEmissions) {
-  const sites = flattenNodes(ORG_STRUCTURE);
+  const sites = flattenNodesSite(ORG_STRUCTURE);
   let scope1 = 0, scope2 = 0;
   let bySite = {};
   for (const site of sites) {
@@ -171,7 +161,6 @@ function getBaselineByScopeAndSite(yearId, sessionEmissions) {
   return { scope1, scope2, bySite };
 }
 
-// Refactored scenario trajectory logic
 function getScenarioTrajectory({ baseline, growth, baseYear, measures, sessionEmissions, yearId }) {
   // Get baseline by scope and by site
   const { scope1, scope2, bySite } = getBaselineByScopeAndSite(yearId, sessionEmissions);
@@ -191,10 +180,10 @@ function getScenarioTrajectory({ baseline, growth, baseYear, measures, sessionEm
     (measures || []).forEach(measure => {
       const start = parseInt(measure.startYear) || baseYear;
       const isPermanent = measure.permanent === 'Yes' || measure.isPermanent === true;
-      const lifecycle = isPermanent ? 99 : Math.max(1, parseInt(measure.lifecycle) || 1);
+      const measureLifecycle = isPermanent ? 99 : Math.max(1, parseInt(measure.lifecycle) || 1);
       const isInstant = measure.instant === 'Yes' || measure.isInstant === true;
       const rampYears = isInstant ? 1 : Math.max(1, parseInt(measure.rampYears) || 1);
-      if (year >= start && year < start + lifecycle) {
+      if (year >= start && year < start + measureLifecycle) {
         let eff = parseFloat(measure.reduction) || 0;
         // Ramp up if not instant
         if (!isInstant && year < start + rampYears) {
@@ -255,42 +244,55 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
   // Add state for new tabs
   const [chartTab, setChartTab] = useState('trajectory');
   
+  // Refs for charts to enable export
+  const trajectoryChartRef = React.useRef(null);
+  const maccChartRef = React.useRef(null);
+  const payoffChartRef = React.useRef(null); // Added for potential export
+  
+  // State for export dropdown visibility
+  const [showTrajectoryExport, setShowTrajectoryExport] = useState(false);
+  const [showMaccExport, setShowMaccExport] = useState(false);
+  const [showPayoffExport, setShowPayoffExport] = useState(false); // Added for potential export
+
+  const { scope1, scope2, split } = useMemo(() => sumEmissionsByScope(selectedYear, sessionEmissions), [selectedYear, sessionEmissions]); // Ensure sumEmissionsByScope is memoized if sessionEmissions can change frequently
+  const baselineEmissionsTotal = useMemo(() => Number(scope1 + scope2), [scope1, scope2]);
+  // Pass a baseline object with scope1 and scope2 breakdown to charts needing it
+  const baselineBreakdown = useMemo(() => ({ scope1, scope2 }), [scope1, scope2]);
+
+  const baseYear = useMemo(() => INVENTORY_YEARS.find(y => y.id === selectedYear)?.year || 2024, [selectedYear]); // Memoized baseYear
+
   // Create realistic mock values for new measures
   const getDefaultMeasureValues = () => ({
     name: 'New Energy Efficiency Measure', 
-    reduction: '5', 
+    reduction: '5', // Default reduction percentage
     scope: 'Scope 1', 
     startYear: baseYear + 1, 
     permanent: 'No', 
     lifecycle: 10, 
-    instant: 'Yes', 
-    rampYears: 2,
+    instant: 'Yes', // Default to instant
+    rampYears: 1,   // If instant, rampYears is effectively 1
     capex: '100000', 
     opex: '5000', 
     groupLevel: true, 
     node: ''
   });
 
-  const { scope1, scope2, split } = sumEmissionsByScope(selectedYear, sessionEmissions);
-  const baselineEmissions = useMemo(() => Number(scope1 + scope2), [scope1, scope2]);
-  const baseYear = INVENTORY_YEARS.find(y => y.id === selectedYear)?.year || 2024;
-
   // BAU Trajectory
   const bau = useMemo(() => getBAUTrajectory(
-    baselineEmissions,
+    baselineEmissionsTotal,
     growthRateP1,
     growthRateP2,
     growthRateP3,
     baseYear
-  ), [baselineEmissions, growthRateP1, growthRateP2, growthRateP3, baseYear]);
+  ), [baselineEmissionsTotal, growthRateP1, growthRateP2, growthRateP3, baseYear]);
 
   // Target Path
   const target = useMemo(() => getTargetPath(
-    baselineEmissions,
+    baselineEmissionsTotal,
     baseYear,
     targetReduction,
     isSBTiAligned
-  ), [baselineEmissions, baseYear, targetReduction, isSBTiAligned]);
+  ), [baselineEmissionsTotal, baseYear, targetReduction, isSBTiAligned]);
 
   // 2. In the component, compute scenario lines
   const scenarioLines = useMemo(() => {
@@ -300,7 +302,7 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
         id: scenario.id,
         name: scenario.name,
         data: getScenarioTrajectory({
-          baseline: baselineEmissions,
+          baseline: baselineEmissionsTotal,
           growth,
           baseYear,
           measures: scenario.measures,
@@ -309,12 +311,11 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
         })
       };
     });
-  }, [scenarios, baselineEmissions, growthRateP1, growthRateP2, growthRateP3, baseYear, sessionEmissions, selectedYear]);
+  }, [scenarios, baselineEmissionsTotal, growthRateP1, growthRateP2, growthRateP3, baseYear, sessionEmissions, selectedYear]);
 
   // 3. Update chartData to include scenario lines
-  const chartData = {
-    labels: bau.years,
-    datasets: [
+  const chartData = useMemo(() => {
+    const datasets = [
       {
         label: 'Business As Usual (BAU)',
         data: bau.values.map(v => v.toFixed(2)),
@@ -346,8 +347,53 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
         tension: 0,
         pointRadius: 2.5,
       }))
-    ]
-  };
+    ];
+
+    if (isSBTiAligned) {
+      const nearTermTargetYear = baseYear + 10;
+      const nearTermTargetValue = baselineEmissionsTotal * (1 - 0.42);
+      const longTermTargetValue = baselineEmissionsTotal * (1 - 0.90);
+
+      const nearTermData = bau.years.map(year => {
+        if (year <= nearTermTargetYear) return nearTermTargetValue;
+        // Optional: could make it go towards longTermTargetValue after nearTermTargetYear
+        // For now, just hold the near-term target level if we want to visualize it flatly
+        // Or, more accurately, the SBTi path would continue to decrease.
+        // The original getTargetPath already calculates a decreasing SBTi path, so this is for visualization of the levels.
+        return null; // Or make it part of a stepped line to 2050
+      });
+       // For simplicity, these lines will be flat. The main 'Target Path' shows the trajectory.
+      datasets.push({
+        label: 'SBTi Near-Term Target Level (-42% by ' + nearTermTargetYear + ')',
+        data: bau.years.map(year => year <= nearTermTargetYear ? nearTermTargetValue : null), // Shows flat line up to target year
+        borderColor: 'rgba(234, 179, 8, 0.6)', // Yellowish
+        borderWidth: 2,
+        borderDash: [5, 5],
+        pointRadius: 0,
+        fill: false,
+        tension: 0,
+        hidden: false, // Make sure it's visible
+        order: -1 // Draw behind BAU/Target Path if needed, or adjust order of others
+      });
+      datasets.push({
+        label: 'SBTi Long-Term Target Level (-90% by 2050)',
+        data: bau.years.map(_year => longTermTargetValue), // Flat line across all years
+        borderColor: 'rgba(220, 38, 38, 0.6)', // Reddish
+        borderWidth: 2,
+        borderDash: [5, 5],
+        pointRadius: 0,
+        fill: false,
+        tension: 0,
+        hidden: false, // Make sure it's visible
+        order: -2 
+      });
+    }
+
+    return {
+      labels: bau.years,
+      datasets
+    };
+  }, [bau, target, scenarioLines, isSBTiAligned, baseYear, baselineEmissionsTotal]);
 
   const chartOptions = {
     responsive: true,
@@ -421,9 +467,10 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
   // Edit Measures
   const openEditMeasures = (scenario) => {
     if (!scenario.measures || scenario.measures.length === 0) {
-      setMeasures([{ name: '', reduction: '', scope: 'Scope 1', startYear: 2025, permanent: 'No', lifecycle: 10, instant: 'Yes', capex: '', opex: '', groupLevel: true, node: '' }]);
+      const defaultValues = getDefaultMeasureValues(); // Use the existing helper
+      setMeasures([defaultValues]);
       setEditMeasureIdx(0);
-      setMeasureForm({ name: '', reduction: '', scope: 'Scope 1', startYear: 2025, permanent: 'No', lifecycle: 10, instant: 'Yes', capex: '', opex: '', groupLevel: true, node: '' });
+      setMeasureForm({ ...defaultValues });
     } else {
       setMeasures([...scenario.measures]);
       setEditMeasureIdx(null);
@@ -483,14 +530,9 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
 
   // Add state for selected scenario for MACC chart
   const [selectedMACCScenario, setSelectedMACCScenario] = useState(null);
-  
-  // Add state for selected year for MACC chart
-  const [selectedMACCYear, setSelectedMACCYear] = useState(2030);
-  
-  // Add state for selected scenario for Wedges chart
-  const [selectedWedgesScenario, setSelectedWedgesScenario] = useState(null);
+  const [selectedMACCYear, setSelectedMACCYear] = useState(baseYear || 2030); // Ensure baseYear is available or default
 
-  // Create MACC chart data (legacy stepped line style)
+  // Create MACC chart data (updated style)
   const maccChartData = useMemo(() => {
     const scenarioId = selectedMACCScenario || (scenarios.length > 0 ? scenarios[0].id : null);
     const scenario = scenarios.find(s => s.id === scenarioId);
@@ -504,60 +546,74 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
         const capex = parseFloat(m.capex) || 0;
         const opex = parseFloat(m.opex) || 0;
         const reduction = parseFloat(m.reduction) || 0;
-        const lifecycle = m.permanent === 'Yes' ? 20 : parseInt(m.lifecycle) || 1;
-        const annualizedCost = capex / lifecycle + opex;
-        // Ramp-up logic
+        const measureLifecycle = m.permanent === 'Yes' ? 99 : Math.max(1, parseInt(m.lifecycle) || 1);
+        const annualizedCost = capex / measureLifecycle + opex;
+
         const startYear = parseInt(m.startYear) || baseYear;
-        const yearsSinceStart = selectedMACCYear - startYear;
         const isInstant = m.instant === 'Yes';
         const rampYears = isInstant ? 1 : Math.max(1, parseInt(m.rampYears) || 1);
-        let effectiveness = reduction;
-        if (!isInstant && yearsSinceStart < rampYears) {
-          effectiveness *= (yearsSinceStart + 1) / rampYears;
+        
+        let effectiveness = 0; // Default to 0
+
+        // Check if the measure is active in the selectedMACCYear
+        if (selectedMACCYear >= startYear && selectedMACCYear < startYear + measureLifecycle) {
+          effectiveness = reduction; // Base effectiveness for the active period
+          
+          const yearsIntoMeasure = selectedMACCYear - startYear; // Years since the measure started
+
+          // Apply ramp-up if not instant and within ramp-up period
+          if (!isInstant && yearsIntoMeasure < rampYears) {
+            effectiveness *= (yearsIntoMeasure + 1) / rampYears;
+          }
         }
-        // BAU growth factor for selected year
+        
         const yearIndex = selectedMACCYear - baseYear;
-        const bauGrowthFactor = yearIndex >= 0 && yearIndex < bau.values.length ? bau.values[yearIndex] / bau.values[0] : 1;
-        const annualAbatementForSelectedYear = baselineEmissions * (effectiveness / 100) * bauGrowthFactor;
+        const bauGrowthFactor = (yearIndex >= 0 && yearIndex < bau.values.length && bau.values[0] > 0) ? bau.values[yearIndex] / bau.values[0] : (bau.values[0] === 0 ? 0 : 1) ;
+        const annualAbatementForSelectedYear = baselineEmissionsTotal * (effectiveness / 100) * bauGrowthFactor;
         const mac = annualAbatementForSelectedYear > 0 ? annualizedCost / annualAbatementForSelectedYear : 0;
         return {
           ...m,
           annualizedCost,
           annualAbatementForSelectedYear,
           mac,
-          color: `hsl(${(idx * 60 + 120) % 360}, 70%, 40%)`
+          color: `hsl(${(idx * 60 + 120) % 360}, 70%, 40%)` // Keep HSL for distinct colors
         };
       })
       .filter(m => m.annualAbatementForSelectedYear > 0)
       .sort((a, b) => a.mac - b.mac);
-    // Build stepped datasets
+    // Build datasets with 3 points for stepped block fill
     let cumulative = 0;
     const datasets = measures.map((m, idx) => {
       const x0 = cumulative;
       const x1 = cumulative + m.annualAbatementForSelectedYear;
       cumulative = x1;
+
+      // Generate consistent colours for each measure
+      const borderColor = `hsl(${(idx * 60 + 120) % 360}, 70%, 40%)`;
+      const backgroundColor = `hsla(${(idx * 60 + 120) % 360}, 70%, 40%, 0.35)`; // ~35% opacity
+
       return {
         label: m.name,
         data: [
           { x: x0, y: m.mac },
-          { x: x1, y: m.mac }
+          { x: x1, y: m.mac },
+          { x: x1, y: 0 } // Drop down to the x-axis so the area under is filled
         ],
-        borderColor: m.color,
-        backgroundColor: m.color,
-        borderWidth: 3,
-        stepped: true,
-        fill: false,
-        pointRadius: 0,
-        pointHoverRadius: 6,
-        measureData: m // for tooltip
+        borderColor,
+        backgroundColor,
+        borderWidth: 1,
+        stepped: 'before',
+        fill: true,
+        measureData: m // make the raw measure available in tooltip callbacks
       };
     });
     return {
+      // labels: [0], // Keep labels: [0] if Chart.js needs it for initialization with no data
       datasets
     };
-  }, [selectedMACCScenario, selectedMACCYear, scenarios, baselineEmissions, baseYear, bau.values]);
+  }, [selectedMACCScenario, selectedMACCYear, scenarios, baselineEmissionsTotal, baseYear, bau.values]);
 
-  // MACC chart options (legacy style)
+  // MACC chart options (updated style)
   const maccChartOptions = {
     responsive: true,
     maintainAspectRatio: false,
@@ -576,14 +632,17 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
     },
     plugins: {
       tooltip: {
-        mode: 'dataset',
+        mode: 'index', // Changed from 'dataset'
         intersect: false,
         callbacks: {
           title: function(tooltipItems) {
+            // In 'index' mode, tooltipItems is an array, use the first item's dataset label
             return tooltipItems[0]?.dataset.label || '';
           },
-          label: function() { return ''; },
+          label: function() { return ''; }, // Keep label empty as details are in footer
           footer: function(tooltipItems) {
+            // In 'index' mode, we might need to find the correct dataset if tooltips from multiple datasets appear
+            // However, with stepped lines, 'index' mode should correctly identify the "active" dataset at that x-value
             const m = tooltipItems[0]?.dataset.measureData;
             if (!m) return '';
             return [
@@ -605,166 +664,65 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
         display: true,
         position: 'bottom',
         labels: {
-          usePointStyle: true,
+          usePointStyle: false, // Changed from true
           padding: 20,
           font: { size: 12 },
           boxWidth: 15
         }
       }
     },
-    interaction: { mode: 'nearest', axis: 'x', intersect: false }
+    interaction: { mode: 'x', axis: 'x', intersect: false } // Changed from 'nearest'
   };
 
-  // Create wedge chart data for abatement wedges
-  const wedgeChartData = useMemo(() => {
-    // If no scenarios, return empty data
-    if (scenarios.length === 0) {
-      return {
-        labels: bau.years,
-        datasets: []
-      };
-    }
-    
-    // Use the selected scenario, or the first scenario if none selected
-    const scenarioId = selectedWedgesScenario || (scenarios.length > 0 ? scenarios[0].id : null);
-    const scenario = scenarios.find(s => s.id === scenarioId);
-    
-    if (!scenario || !scenario.measures || scenario.measures.length === 0) {
-      return {
-        labels: bau.years,
-        datasets: [{
-          label: 'BAU',
-          data: bau.values.map(v => v.toFixed(2)),
-          borderColor: '#ef4444',
-          backgroundColor: '#ef4444',
-          fill: false,
-          tension: 0,
-          pointRadius: 2,
-          borderWidth: 2
-        }]
-      };
-    }
-    
-    // Start with BAU trajectory as the top line
-    const datasets = [{
-      label: 'BAU',
-      data: bau.values.map(v => v.toFixed(2)),
-      borderColor: '#ef4444',
-      backgroundColor: '#ef4444',
-      fill: false,
-      tension: 0,
-      pointRadius: 2,
-      borderWidth: 2
-    }];
-    
-    // For each measure, calculate its contribution over time
-    let cumulativeValues = [...bau.values];
-    
-    scenario.measures.forEach((measure, idx) => {
-      const start = parseInt(measure.startYear) || baseYear;
-      const startIndex = bau.years.indexOf(start);
-      if (startIndex === -1) return;
-      
-      const reduction = parseFloat(measure.reduction) || 0;
-      const isPermanent = measure.permanent === 'Yes';
-      const lifecycle = isPermanent ? 99 : Math.max(1, parseInt(measure.lifecycle) || 1);
-      const isInstant = measure.instant === 'Yes';
-      const rampYears = isInstant ? 1 : Math.max(1, parseInt(measure.rampYears) || 1);
-      
-      const measureValues = [];
-      const measureContribution = [];
-      
-      for (let i = 0; i < bau.years.length; i++) {
-        const year = bau.years[i];
-        
-        if (i < startIndex || i >= startIndex + lifecycle) {
-          // Measure not active yet or expired
-          measureContribution.push(0);
-        } else {
-          // Measure is active
-          let eff = reduction;
-          
-          // Apply ramp-up if not instant
-          if (!isInstant && i < startIndex + rampYears) {
-            eff *= (i - startIndex + 1) / rampYears;
-          }
-          
-          const yearlyReduction = (baselineEmissions * (eff / 100)) * (bau.values[i] / bau.values[0]);
-          measureContribution.push(yearlyReduction);
-        }
-        
-        // Calculate new total after this measure
-        const previousValue = i > 0 ? cumulativeValues[i-1] : baselineEmissions;
-        const newValue = cumulativeValues[i] - measureContribution[i];
-        measureValues.push(newValue);
-      }
-      
-      // Update cumulative values for next measure
-      cumulativeValues = [...measureValues];
-      
-      // Add this measure's contribution as a dataset
-      datasets.push({
-        label: measure.name,
-        data: measureValues.map(v => v.toFixed(2)),
-        borderColor: `hsl(${(idx * 60 + 120) % 360}, 70%, 40%)`,
-        backgroundColor: `hsla(${(idx * 60 + 120) % 360}, 70%, 40%, 0.7)`,
-        fill: '+1',
-        tension: 0,
-        pointRadius: 1,
-        borderWidth: 1
-      });
-    });
-    
-    return {
-      labels: bau.years,
-      datasets: datasets.reverse() // Reverse to make stacking work correctly
-    };
-  }, [selectedWedgesScenario, scenarios, bau, baselineEmissions, baseYear]);
+  const triggerDownload = (dataUrl, filename) => {
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
-  const wedgeChartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: 'Emissions (tCO2eq)'
-        },
-        grid: {
-          color: '#e5e7eb'
-        }
-      },
-      x: {
-        title: {
-          display: true,
-          text: 'Year'
-        },
-        grid: {
-          color: '#e5e7eb'
-        }
-      }
-    },
-    plugins: {
-      legend: {
-        display: true,
-        position: 'bottom',
-        labels: {
-          usePointStyle: true,
-          pointStyle: 'circle'
-        }
-      },
-      tooltip: {
-        mode: 'index',
-        intersect: false
+  const exportChart = (chartRef, format, chartNamePrefix) => {
+    if (chartRef.current) {
+      const chartInstance = chartRef.current; // Access the chart instance
+      let imageDataUrl;
+      const filename = `${chartNamePrefix}_${selectedMACCYear || baseYear}_${new Date().toISOString().slice(0,10)}.${format}`;
+
+      if (format === 'jpeg') {
+        const canvas = document.createElement('canvas');
+        canvas.width = chartInstance.width;
+        canvas.height = chartInstance.height;
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        const chartPngUrl = chartInstance.toBase64Image();
+        const img = new Image();
+        img.onload = () => {
+          ctx.drawImage(img, 0, 0);
+          imageDataUrl = canvas.toDataURL('image/jpeg', 0.9);
+          triggerDownload(imageDataUrl, filename);
+        };
+        img.src = chartPngUrl;
+      } else { // png
+        imageDataUrl = chartInstance.toBase64Image();
+        triggerDownload(imageDataUrl, filename);
       }
     }
   };
+
+  // SVG Icon for Download
+  const DownloadIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+      <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+      <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+    </svg>
+  );
 
   return (
     <div className="trajectory-dashboard">
       <div className="dashboard-grid" style={{ alignItems: 'stretch', minHeight: '80vh', gap: '24px', display: 'flex' }}>
-        <div className="inputs-panel" style={{ minHeight: '100%', width: '300px', maxWidth: '300px', flexShrink: 0 }}>
+        <div className="inputs-panel" style={{ minHeight: '100%', width: '400px', maxWidth: '400px', flexShrink: 0 }}>
           <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
             <button
               className={`tab-button${activeTab === 'baseline' ? ' active' : ''}`}
@@ -795,8 +753,8 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
                     <input
                       id="total-co2eq"
                       className="form-input"
-                      style={{ textAlign: 'center', fontWeight: 600, fontSize: 16, minWidth: 0, width: '100%', height: 36, borderRadius: 4, border: '1px solid #ccc', padding: '0 12px', background: '#f9fafb' }}
-                      value={baselineEmissions.toFixed(2)}
+                      style={{ textAlign: 'left', fontWeight: 600, fontSize: 16, minWidth: 0, width: '100%', height: 36, borderRadius: 4, border: '1px solid #ccc', padding: '0 12px', background: '#f9fafb' }}
+                      value={baselineEmissionsTotal.toFixed(2)}
                       readOnly
                       onClick={() => setShowSplit(true)}
                       title="View split by scope"
@@ -924,18 +882,20 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
                 </div>
                 <div className="scenarios-list">
                   {scenarios.map((scenario, idx) => (
-                    <div key={scenario.id} className="scenario-block" style={{ padding: 12, border: '1px solid #e5e7eb', borderRadius: 8, marginBottom: 12, background: '#fff' }}>
-                      <div style={{ fontWeight: 600, fontSize: 16, marginBottom: 6 }}>{scenario.name}</div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
-                        <button className="action-btn" style={{ height: 28, minWidth: 0, fontSize: 13, padding: '0 12px' }} onClick={() => openEditMeasures(scenario)}>Edit Measures</button>
-                        <button className="edit-button" style={{ width: 28, height: 28, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #E5E7EB', borderRadius: 4, background: 'white', cursor: 'pointer' }} onClick={() => openEditScenario(scenario)} title="Edit Scenario">
+                    <div key={scenario.id} className="scenario-block" style={{ padding: 12, border: '1px solid #e5e7eb', borderRadius: 8, marginBottom: 12, background: '#fff', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <div> {/* Left part: Name and count */}
+                        <div style={{ fontWeight: 600, fontSize: 16 }}>{scenario.name}</div>
+                        <div className="measures-count" style={{ fontSize: '0.9em', color: '#6b7280', marginTop: '2px' }}>{scenario.measures.length} measure(s)</div>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}> {/* Right part: Button container */}
+                        <button className="action-btn" style={{ height: 28, minWidth: 0, fontSize: 13, padding: '0 10px' }} onClick={() => openEditMeasures(scenario)}>Edit Measures</button>
+                        <button className="edit-button" style={{ width: 28, height: 28, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #D1D5DB', borderRadius: 4, background: 'white', cursor: 'pointer' }} onClick={() => openEditScenario(scenario)} title="Edit Scenario">
                         ✎
                         </button>
-                        <button className="action-btn delete" style={{ width: 28, height: 28, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #ef4444', borderRadius: 4, background: 'white', color: '#ef4444', fontWeight: 700, fontSize: 18, cursor: 'pointer' }} onClick={() => setScenarios(scenarios.filter(s => s.id !== scenario.id))} title="Delete Scenario">
+                        <button className="action-btn delete" style={{ width: 28, height: 28, padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid #EF4444', borderRadius: 4, background: 'white', color: '#EF4444', fontWeight: 600, fontSize: 16, cursor: 'pointer' }} onClick={() => setScenarios(scenarios.filter(s => s.id !== scenario.id))} title="Delete Scenario">
                           ×
                         </button>
                       </div>
-                      <div className="measures-count">{scenario.measures.length} measure(s)</div>
                     </div>
                   ))}
                 </div>
@@ -949,11 +909,9 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
           display: 'flex', 
           flexDirection: 'column', 
           justifyContent: 'flex-start',
-          width: 'calc(100% - 300px)',
-          flex: 1,
-          overflow: 'hidden'
+          width: 'calc(100% - 400px)', // Adjusted from original to ensure it doesn't overflow
+          flex: 1 // Added to ensure it takes available space
         }}>
-          {/* Add chart tabs */}
           <div className="chart-tabs" style={{ display: 'flex', borderBottom: '1px solid #e5e7eb', marginBottom: '16px' }}>
             <button 
               className={`chart-tab ${chartTab === 'trajectory' ? 'active' : ''}`} 
@@ -980,15 +938,15 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
               MACC Analysis
             </button>
             <button 
-              className={`chart-tab ${chartTab === 'wedges' ? 'active' : ''}`} 
-              onClick={() => setChartTab('wedges')}
+              className={`chart-tab ${chartTab === 'payoff' ? 'active' : ''}`} 
+              onClick={() => setChartTab('payoff')} // Changed from wedges to payoff
               style={{ 
                 padding: '8px 16px', 
-                fontWeight: chartTab === 'wedges' ? '600' : '400',
-                borderBottom: chartTab === 'wedges' ? '2px solid #3b82f6' : 'none'
+                fontWeight: chartTab === 'payoff' ? '600' : '400',
+                borderBottom: chartTab === 'payoff' ? '2px solid #3b82f6' : 'none'
               }}
             >
-              Abatement Wedges
+              Pay-off Plot 
             </button>
           </div>
           
@@ -996,7 +954,18 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
             <>
               <h2 className="section-header">Emissions Trajectory (tCO2eq)</h2>
               <div className="chart-container" style={{ height: '100%', minHeight: 400, flex: 1 }}>
-                <Line data={chartData} options={chartOptions} />
+                <Line ref={trajectoryChartRef} data={chartData} options={chartOptions} />
+              </div>
+              <div style={{ marginTop: '10px', textAlign: 'right', position: 'relative' }}>
+                <button className="action-btn icon-btn" onClick={() => setShowTrajectoryExport(!showTrajectoryExport)} title="Export Chart">
+                  <DownloadIcon />
+                </button>
+                {showTrajectoryExport && (
+                  <div className="export-dropdown">
+                    <button onClick={() => { exportChart(trajectoryChartRef, 'png', 'TrajectoryChart'); setShowTrajectoryExport(false); }}>Export PNG</button>
+                    <button onClick={() => { exportChart(trajectoryChartRef, 'jpeg', 'TrajectoryChart'); setShowTrajectoryExport(false); }}>Export JPEG</button>
+                  </div>
+                )}
               </div>
               <p className="chart-note">*CAPEX and OPEX values are recorded but do not currently affect the emissions trajectory graph.</p>
             </>
@@ -1035,7 +1004,7 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
               </div>
               <div className="chart-container" style={{ height: '100%', minHeight: 400, flex: 1 }}>
                 {scenarios.length > 0 && scenarios[0].measures && scenarios[0].measures.length > 0 ? (
-                  <Bar data={maccChartData} options={maccChartOptions} />
+                  <Line ref={maccChartRef} data={maccChartData} options={maccChartOptions} />
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
                     <p>Add measures to your scenarios to view MACC Analysis</p>
@@ -1055,49 +1024,45 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
                   </div>
                 )}
               </div>
+              <div style={{ marginTop: '10px', textAlign: 'right', position: 'relative' }}>
+                <button className="action-btn icon-btn" onClick={() => setShowMaccExport(!showMaccExport)} title="Export Chart">
+                  <DownloadIcon />
+                </button>
+                {showMaccExport && (
+                  <div className="export-dropdown">
+                    <button onClick={() => { exportChart(maccChartRef, 'png', 'MACC'); setShowMaccExport(false); }}>Export PNG</button>
+                    <button onClick={() => { exportChart(maccChartRef, 'jpeg', 'MACC'); setShowMaccExport(false); }}>Export JPEG</button>
+                  </div>
+                )}
+              </div>
               <p className="chart-note">*The MACC shows the cost-effectiveness of each measure ($/tCO2e) and cumulative emissions reduction for year {selectedMACCYear}.</p>
             </>
           )}
           
-          {chartTab === 'wedges' && (
+          {chartTab === 'payoff' && (
             <>
-              <h2 className="section-header">Abatement Wedges</h2>
-              <div style={{ marginBottom: '16px', display: 'flex', alignItems: 'center' }}>
-                <label style={{ marginRight: '8px', fontWeight: '500' }}>Select Scenario:</label>
-                <select 
-                  value={selectedWedgesScenario || (scenarios.length > 0 ? scenarios[0].id : '')} 
-                  onChange={e => setSelectedWedgesScenario(Number(e.target.value))}
-                  className="form-control" 
-                  style={{ display: 'inline-block', width: 'auto', minWidth: '200px' }}
-                >
-                  {scenarios.map(s => (
-                    <option key={s.id} value={s.id}>{s.name}</option>
-                  ))}
-                </select>
+              <h2 className="section-header">Abatement Measure Pay-off Analysis</h2>
+              <div className="chart-container" style={{ height: '100%', minHeight: 500, flex: 1 }}>
+                <BubblePayoffChart
+                  scenarios={scenarios}
+                  baseline={baselineBreakdown} 
+                  baseYear={baseYear}
+                  ref={payoffChartRef} // Pass the ref for export
+                />
               </div>
-              <div className="chart-container" style={{ height: '100%', minHeight: 400, flex: 1 }}>
-                {scenarios.length > 0 && scenarios[0].measures && scenarios[0].measures.length > 0 ? (
-                  <Line data={wedgeChartData} options={wedgeChartOptions} />
-                ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                    <p>Add measures to your scenarios to view Abatement Wedges</p>
-                    <button 
-                      className="add-btn"
-                      style={{ marginTop: '16px' }}
-                      onClick={() => {
-                        if (scenarios.length > 0) {
-                          openEditMeasures(scenarios[0].id);
-                        } else {
-                          handleAddScenario();
-                        }
-                      }}
-                    >
-                      {scenarios.length > 0 ? 'Add Measures' : 'Add Scenario'}
-                    </button>
+              {/* Export button UI for Payoff Chart */}
+              <div style={{ marginTop: '10px', textAlign: 'right', position: 'relative' }}>
+                <button className="action-btn icon-btn" onClick={() => setShowPayoffExport(!showPayoffExport)} title="Export Chart">
+                  <DownloadIcon />
+                </button>
+                {showPayoffExport && (
+                  <div className="export-dropdown" style={{ zIndex: 10 }}> {/* Added zIndex just in case */}
+                    <button onClick={() => { exportChart(payoffChartRef, 'png', 'PayoffChart'); setShowPayoffExport(false); }}>Export PNG</button>
+                    <button onClick={() => { exportChart(payoffChartRef, 'jpeg', 'PayoffChart'); setShowPayoffExport(false); }}>Export JPEG</button>
                   </div>
                 )}
               </div>
-              <p className="chart-note">*Each colored area represents the annual abatement (tCO2eq/yr) contributed by a specific measure.</p>
+              <p className="chart-note">*Bubbles represent individual abatement measures. X-axis: cumulative abatement to 2050. Y-axis: NPV cost. Bubble size: average annual abatement during build years.</p>
             </>
           )}
         </div>

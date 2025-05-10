@@ -445,83 +445,83 @@ function OrgStructureTable() {
           </div>
           {tab === 'general' && (
             <>
+          <div className="form-group">
+            <label>{isEditing ? `${editingNode.type} Name:` : 'Name:'}</label>
+            <input
+              type="text"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange}
+              placeholder={`e.g., London Office`}
+              className="form-control"
+            />
+          </div>
+          
+          <div className="form-group">
+            <label>{isEditing ? `${editingNode.type} Code:` : 'Code:'}</label>
+            <input
+              type="text"
+              name="code"
+              value={formData.code}
+              onChange={handleInputChange}
+              placeholder={`e.g., LON-01`}
+              className="form-control"
+            />
+          </div>
+          
+          {isSiteForm && (
+            <>
               <div className="form-group">
-                <label>{isEditing ? `${editingNode.type} Name:` : 'Name:'}</label>
+                <label>Site Type:</label>
+                <select
+                  name="type"
+                  value={formData.type}
+                  onChange={handleInputChange}
+                  className="form-control"
+                >
+                  {siteTypes.map(type => (
+                    <option key={type} value={type}>{type}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div className="form-group">
+                <label>Country:</label>
                 <input
                   type="text"
-                  name="name"
-                  value={formData.name}
+                  name="country"
+                  value={formData.country}
                   onChange={handleInputChange}
-                  placeholder={`e.g., London Office`}
+                  placeholder="e.g., GB"
                   className="form-control"
                 />
               </div>
               
               <div className="form-group">
-                <label>{isEditing ? `${editingNode.type} Code:` : 'Code:'}</label>
+                <label>Latitude:</label>
                 <input
                   type="text"
-                  name="code"
-                  value={formData.code}
+                  name="latitude"
+                  value={formData.latitude}
                   onChange={handleInputChange}
-                  placeholder={`e.g., LON-01`}
+                  placeholder="e.g., 51.5074"
                   className="form-control"
                 />
               </div>
               
-              {isSiteForm && (
-                <>
-                  <div className="form-group">
-                    <label>Site Type:</label>
-                    <select
-                      name="type"
-                      value={formData.type}
-                      onChange={handleInputChange}
-                      className="form-control"
-                    >
-                      {siteTypes.map(type => (
-                        <option key={type} value={type}>{type}</option>
-                      ))}
-                    </select>
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Country:</label>
-                    <input
-                      type="text"
-                      name="country"
-                      value={formData.country}
-                      onChange={handleInputChange}
-                      placeholder="e.g., GB"
-                      className="form-control"
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Latitude:</label>
-                    <input
-                      type="text"
-                      name="latitude"
-                      value={formData.latitude}
-                      onChange={handleInputChange}
-                      placeholder="e.g., 51.5074"
-                      className="form-control"
-                    />
-                  </div>
-                  
-                  <div className="form-group">
-                    <label>Longitude:</label>
-                    <input
-                      type="text"
-                      name="longitude"
-                      value={formData.longitude}
-                      onChange={handleInputChange}
-                      placeholder="e.g., -0.1278"
-                      className="form-control"
-                    />
-                  </div>
-                </>
-              )}
+              <div className="form-group">
+                <label>Longitude:</label>
+                <input
+                  type="text"
+                  name="longitude"
+                  value={formData.longitude}
+                  onChange={handleInputChange}
+                  placeholder="e.g., -0.1278"
+                  className="form-control"
+                />
+              </div>
+            </>
+          )}
             </>
           )}
           {tab === 'indicators' && isEditing && (

@@ -1,0 +1,113 @@
+/* ClimateRiskPage.css */
+
+/* General card styling - can be enhanced or use Tailwind primarily */
+.card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem; /* 24px */
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+.loader {
+  border-top-color: #3498db; /* Blue color for the loader */
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Styles for Leaflet map container */
+.map-container {
+  height: 400px; /* Default height, can be adjusted */
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Specific styling for the PhysicalRiskDefinitionPanel if needed beyond Tailwind */
+.risk-definition-panel fieldset {
+  margin-bottom: 1rem; /* Spacing between fieldsets */
+}
+
+.risk-definition-panel legend {
+  font-size: 1.125rem; /* text-lg */
+  color: #374151; /* gray-700 */
+  margin-bottom: 0.5rem;
+}
+
+/* Styling for the analysis results section */
+.analysis-results-container .card {
+  margin-top: 1.5rem;
+}
+
+.tab-button {
+  padding: 0.5rem 1rem;
+  margin-right: 0.5rem;
+  border: 1px solid transparent;
+  border-bottom: none;
+  border-radius: 0.375rem 0.375rem 0 0; /* rounded-t-md */
+  cursor: pointer;
+  font-weight: 500; /* medium */
+  color: #4b5563; /* gray-600 */
+}
+
+.tab-button.active {
+  background-color: #ffffff;
+  border-color: #d1d5db; /* gray-300 */
+  color: #1f2937; /* gray-800 */
+}
+
+.tab-content {
+  padding: 1rem;
+  border: 1px solid #d1d5db; /* gray-300 */
+  border-top: none;
+  border-radius: 0 0 0.375rem 0.375rem; /* rounded-b-md */
+  background-color: #ffffff;
+}
+
+/* Risk Matrix Table */
+.risk-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem; /* text-sm */
+}
+
+.risk-matrix-table th,
+.risk-matrix-table td {
+  border: 1px solid #e5e7eb; /* gray-200 */
+  padding: 0.75rem; /* p-3 */
+  text-align: left;
+}
+
+.risk-matrix-table th {
+  background-color: #f9fafb; /* gray-50 */
+  font-weight: 600; /* semibold */
+}
+
+/* Risk Quadrant */
+.risk-quadrant-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px; /* Ensure it has some size */
+  position: relative;
+}
+
+.risk-quadrant {
+  width: 400px; /* Adjust as needed */
+  height: 400px; /* Adjust as needed */
+  border: 1px solid #d1d5db; /* gray-300 */
+  position: relative;
+  /* Background grid lines can be added via JS or CSS pseudo-elements */
+}
+
+.quadrant-bubble {
+  position: absolute;
+  border-radius: 50%;
+  /* background-color will be set dynamically */
+  transform: translate(-50%, -50%); /* Center the bubble on its (x,y) coords */
+  /* Transition for smooth movement if data updates */
+  transition: top 0.5s ease, left 0.5s ease, width 0.5s ease, height 0.5s ease;
+} 

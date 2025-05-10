@@ -9,6 +9,7 @@ import ReportingPage from './pages/ReportingPage';
 import SettingsPage from './pages/SettingsPage';
 import ProfilePage from './pages/ProfilePage';
 import ScenarioAnalysisPage from './pages/ScenarioAnalysisPage';
+import ClimateRisksPage from './pages/ClimateRisksPage';
 import { INVENTORY_YEARS, ORG_STRUCTURE, NODE_INDICATOR_MAPPING, INDICATORS } from './demoData';
 
 function App() {
@@ -42,6 +43,8 @@ function App() {
         return <ScenarioAnalysisPage
           sessionEmissions={sessionEmissions}
         />;
+      case 'climate-risks':
+        return <ClimateRisksPage />;
       case 'reporting':
         return <ReportingPage />;
       case 'settings':

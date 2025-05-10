@@ -2,6 +2,29 @@ import React, { useState } from 'react';
 import './PageStyles.css';
 import { ORG_STRUCTURE, INDICATORS, NODE_INDICATOR_MAPPING, INVENTORY_YEARS, QUESTIONNAIRE_DATA, CONVERSION_FACTORS, EMISSION_FACTORS } from '../demoData';
 
+// Helper to format number string with spaces as thousands separator
+const formatNumberWithSpaces = (numStr) => {
+  let valueAsString = String(numStr).trim();
+  if (valueAsString === '') return '';
+
+  // Check if the string, after removing ALL internal spaces, is a valid number
+  const cleanedValueForTest = valueAsString.replace(/\s/g, '');
+  if (cleanedValueForTest === '' || isNaN(parseFloat(cleanedValueForTest))) {
+    return valueAsString; // Not a number or empty after cleaning, return original (trimmed)
+  }
+
+  // Proceed with formatting using the cleaned value for splitting, to handle inputs like "123 45.67"
+  const [integerPart, decimalPart] = cleanedValueForTest.split('.');
+  const formattedIntegerPart = integerPart.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return decimalPart !== undefined ? `${formattedIntegerPart}.${decimalPart}` : formattedIntegerPart;
+};
+
+// Helper to parse a formatted number string (with spaces) back to a plain number string
+const parseFormattedNumber = (formattedStr) => {
+  if (formattedStr === null || formattedStr === undefined) return '';
+  return String(formattedStr).replace(/\s/g, ''); // Remove all spaces
+};
+
 const flattenNodes = (nodes, arr = []) => {
   nodes.forEach(node => {
     arr.push(node);
@@ -93,22 +116,35 @@ const DataCollectionPage = ({ sessionEmissions, updateSessionEmissions }) => {
           <h2>Edit Data for {node.name} <span style={{ color: '#888', fontWeight: 400 }}>({node.code})</span></h2>
           <div style={{ marginTop: 12 }}>
             {indicators.map(indicator => {
-              const value = editValues[indicator.id]?.value ?? allValues[indicator.id]?.value ?? '';
+              // Ensure rawValue is consistently a string, defaulting to empty string for formatting purposes.
+              let rawValue = editValues[indicator.id]?.value ?? allValues[indicator.id]?.value;
+              if (rawValue === null || rawValue === undefined) {
+                rawValue = '';
+              } else {
+                rawValue = String(rawValue); // Ensure it is a string before formatting
+              }
+              
+              const displayValue = formatNumberWithSpaces(rawValue);
               const unit = indicator.default_unit;
-              const ghg = calcGHG(indicator, value, unit);
+              // Use the unformatted rawValue for calculation, ensuring it's a valid number or 0.
+              const numericRawValue = parseFloat(parseFormattedNumber(rawValue)) || 0;
+              const ghg = calcGHG(indicator, numericRawValue, unit);
               return (
                 <div key={indicator.id} style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 10 }}>
                   <span style={{ minWidth: 70, fontFamily: 'monospace' }}>{indicator.id}</span>
                   <span style={{ flex: 1 }}>{indicator.name}</span>
                   <input
-                    type="number"
-                    value={value}
+                    type="text" // Changed to text to reliably show spaces
+                    value={displayValue}
                     onChange={e => {
-                      const v = e.target.value;
-                      setEditValues(prev => ({ ...prev, [indicator.id]: { value: v, unit } }));
+                      const parsedValue = parseFormattedNumber(e.target.value);
+                      // Allow only numbers and a single decimal point for the raw value
+                      if (/^\d*\.?\d*$/.test(parsedValue) || parsedValue === '') {
+                        setEditValues(prev => ({ ...prev, [indicator.id]: { value: parsedValue, unit } }));
+                      }
                     }}
                     className="form-control"
-                    style={{ width: 100 }}
+                    style={{ width: 100, textAlign: 'right' }} // Added textAlign: right for number inputs
                     placeholder="Value"
                   />
                   <span style={{ minWidth: 40 }}>{unit}</span>

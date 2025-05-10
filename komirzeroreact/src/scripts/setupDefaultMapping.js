@@ -349,10 +349,10 @@ function initializeAllMappings() {
     }
     
     // Setup node-indicator mapping
-    setupNodeIndicatorMapping();
+  setupNodeIndicatorMapping();
     
     // Setup questionnaire mappings
-    setupQuestionnaireMappings();
+  setupQuestionnaireMappings();
     
     // Check indicator mappings
     checkIndicatorMappings();

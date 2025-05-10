@@ -1,0 +1,81 @@
+.dashboard-layout-grid { /* New grid for elements below the map */
+  display: grid;
+  gap: 1rem; /* Reduced gap from 1.5rem */
+  /* Define grid areas for a Power BI like structure - 3 columns */
+  grid-template-areas:
+    "kpi1 kpi2 kpi3"
+    "pieChart bar1Chart bar1Chart"
+    "bar2Chart bar2Chart bar2Chart";
+  grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+}
+
+/* Styling for individual grid items (cards) */
+.grid-item {
+  background-color: #ffffff;
+  padding: 1rem; /* Reduced padding from 1.5rem */
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  /* Add transitions or other visual cues if desired */
+}
+
+.chart-container {
+  height: 220px; /* Reduced height from 250px */
+  position: relative;
+}
+
+/* Responsive adjustments for the layout grid */
+@media (max-width: 1024px) { /* For tablets */
+  .dashboard-layout-grid {
+    grid-template-areas:
+      "kpi1 kpi2"
+      "kpi3 pieChart" /* KPI3 and Pie side-by-side */
+      "bar1Chart bar1Chart"
+      "bar2Chart bar2Chart";
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .item-kpi-scope1, .item-kpi-scope2, .item-kpi-total, .item-scope-pie {
+    /* Ensure KPIs and Pie chart can adapt to smaller height if needed */
+     min-height: 120px; /* Adjust as needed */
+  }
+  .chart-container {
+    height: 200px; /* Slightly smaller for tablets */
+  }
+}
+
+@media (max-width: 768px) { /* For larger mobile / smaller tablets */
+  .dashboard-layout-grid {
+    grid-template-areas:
+      "kpi1 kpi1"
+      "kpi2 kpi3"
+      "pieChart pieChart"
+      "bar1Chart bar1Chart"
+      "bar2Chart bar2Chart";
+    grid-template-columns: repeat(2, 1fr);
+  }
+   .chart-container {
+    height: 180px; 
+  }
+}
+
+
+@media (max-width: 640px) { /* For mobile */
+  .dashboard-layout-grid {
+    grid-template-areas:
+      "kpi1"
+      "kpi2"
+      "kpi3"
+      "pieChart"
+      "bar1Chart"
+      "bar2Chart";
+    grid-template-columns: 1fr;
+  }
+  .metric-value {
+    font-size: 1.875rem; /* Slightly smaller for mobile */
+  }
+  .chart-container {
+    height: 180px; /* Or even 200px if text overlaps */
+  }
+  .grid-item {
+    padding: 0.75rem;
+  }
+} 

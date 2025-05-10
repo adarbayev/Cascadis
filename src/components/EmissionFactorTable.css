@@ -1,0 +1,13 @@
+.save-button {
+    background-color: #10b981; /* Green 600 */
+    color: white;
+    /* padding: 10px 20px; */ /* Keep existing padding if any, or adjust as needed */
+    /* border: none; */ /* Keep existing border style if any */
+    /* border-radius: 6px; */ /* Keep existing border-radius if any */
+    /* cursor: pointer; */ /* Keep existing cursor style if any */
+    /* font-weight: 500; */ /* Keep existing font-weight if any */
+}
+
+.save-button:hover {
+    background-color: #059669; /* Darker Green 700 */
+} 

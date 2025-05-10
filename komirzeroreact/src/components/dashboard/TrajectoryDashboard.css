@@ -21,13 +21,13 @@
   padding: 1.5rem;
 }
 
-.section-header {
+.section-header, .section-header-with-button .section-header {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #065f46; /* emerald-800 */
+  color: #172554;
   margin-bottom: 1rem;
   padding-bottom: 0.5rem;
-  border-bottom: 1px solid #e5e7eb; /* gray-200 */
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .section-header-with-button {
@@ -121,18 +121,26 @@
 }
 
 .form-input {
-  display: block;
   width: 100%;
-  padding: 0.5rem;
-  border: 1px solid #d1d5db; /* gray-300 */
-  border-radius: 0.25rem;
-  margin-top: 0.25rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #D1D5DB; /* gray-300 */
+  border-radius: 0.375rem; /* rounded-md */
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.25rem;
+  color: #1F2937; /* gray-800 */
+  background-color: #F9FAFB; /* gray-50 */
+  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+/* Targeting specific baseline year inputs if they have this ID and class */
+#baseline-year.form-input {
+  height: 36px;
 }
 
 .form-input:focus {
   outline: none;
-  border-color: #10b981; /* emerald-500 */
-  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  border-color: #2563eb;
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.15);
 }
 
 .form-input:disabled {
@@ -155,26 +163,86 @@
 }
 
 .edit-btn:hover {
-  color: #047857; /* emerald-700 */
+  color: #2563eb;
   text-decoration: underline;
 }
 
 .add-btn {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.375rem 0.75rem;
-  background-color: #10b981; /* emerald-500 */
-  color: white;
+  background-color: #2563eb;
+  color: #fff;
   border: none;
-  border-radius: 0.25rem;
-  font-size: 0.875rem;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
   font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: background 0.2s;
 }
 
-.add-btn:hover {
-  background-color: #059669; /* emerald-600 */
+.add-btn:hover, .save-button:hover {
+  background-color: rgba(37,99,235,0.08);
+  color: #2563eb;
+}
+
+.save-button {
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.form-actions .save-button {
+  background-color: #2563eb !important;
+  color: #fff !important;
+}
+.form-actions .save-button:hover {
+  background-color: rgba(37,99,235,0.08) !important;
+  color: #2563eb !important;
+}
+
+/* Export Dropdown Styles */
+.export-dropdown {
+  position: absolute;
+  right: 0;
+  top: 100%; /* Position below the button */
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 10; /* Ensure it's above other elements, like the chart canvas */
+  padding: 4px;
+  margin-top: 4px; /* Small gap from the button */
+}
+
+.export-dropdown button {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  text-align: left;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.875rem;
+}
+
+.export-dropdown button:hover {
+  background-color: #f0f0f0;
+}
+
+.icon-btn {
+  /* Styles for icon buttons if needed, e.g., padding, dimensions */
+  padding: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.icon-btn:hover {
+  background-color: #f0f0f0;
 }
 
 .scenarios-list {

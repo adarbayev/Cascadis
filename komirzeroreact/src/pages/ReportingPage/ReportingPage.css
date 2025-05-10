@@ -1,0 +1,31 @@
+.reporting-title, .reporting-subtitle {
+  color: #172554 !important;
+}
+
+.report-button, .cdp-button, .gri-button, .csrd-button {
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 0.75rem;
+  padding: 2rem 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.report-button:hover, .cdp-button:hover, .gri-button:hover, .csrd-button:hover {
+  background-color: rgba(37,99,235,0.08);
+  color: #2563eb;
+}
+
+.report-button-icon {
+  font-size: 3rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #2563eb;
+} 

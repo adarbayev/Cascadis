@@ -1,0 +1,163 @@
+/* ClimateRiskPage.css - to be co-located with climate components */
+
+/* General card styling - can be enhanced or use Tailwind primarily */
+.card {
+  background-color: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem; /* 24px */
+  margin-bottom: 1.5rem; /* 24px */
+}
+
+.loader {
+  border-top-color: #3498db; /* Blue color for the loader */
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Styles for Leaflet map container */
+.map-container {
+  height: 500px; /* Default height, consistent with SiteMap.js inline style if that was intended */
+  width: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Specific styling for the PhysicalRiskDefinitionPanel if needed beyond Tailwind */
+/* These might be less necessary if Tailwind is handling most of it in the JSX */
+.risk-definition-panel fieldset {
+  margin-bottom: 1rem; 
+}
+
+.risk-definition-panel legend {
+  font-size: 1.125rem; 
+  color: #374151; 
+  margin-bottom: 0.5rem;
+}
+
+/* Styling for the analysis results section (tabs and content) */
+.analysis-results-container .card {
+  margin-top: 1.5rem;
+}
+
+/* Styling for main page tabs (Physical, Transition, Analysis) */
+/* These styles are applied by Tailwind in ClimateRisksPage.js, so duplication here might not be needed */
+/* Example for .tab-button if not using Tailwind for these specific elements */
+
+/* Risk Matrix Table */
+.risk-matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem; /* text-sm */
+}
+
+.risk-matrix-table th,
+.risk-matrix-table td {
+  border: 1px solid #e5e7eb; /* gray-200 */
+  padding: 0.75rem; /* p-3 */
+  text-align: left;
+}
+
+.risk-matrix-table th {
+  background-color: #f9fafb; /* gray-50 */
+  font-weight: 600; /* semibold */
+}
+
+/* Risk Quadrant */
+.risk-quadrant-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 400px; 
+  position: relative;
+}
+
+.risk-quadrant {
+  width: 400px; 
+  height: 400px; 
+  border: 1px solid #d1d5db; 
+  position: relative;
+}
+
+.quadrant-bubble {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%); 
+  transition: top 0.5s ease, left 0.5s ease, width 0.5s ease, height 0.5s ease;
+} 
+
+/* Styles for PhysicalRiskDefinitionPanel Checkboxes */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  padding: 0.25rem 0.5rem; /* Equivalent to p-1 px-2 */
+  margin-bottom: 0.25rem; /* Add some space between checkbox lines if they wrap */
+  border-radius: 0.375rem; /* rounded-md */
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.checkbox-label:hover {
+  background-color: #f3f4f6; /* gray-100 */
+}
+
+.checkbox-label input[type="checkbox"].form-checkbox {
+  /* Using Tailwind classes directly in JSX is often preferred for these, 
+     but these can serve as a base or for non-Tailwind projects.
+     Tailwind already provides good defaults for form-checkbox.
+  */
+  margin-right: 0.5rem; /* space-x-2 on parent label */
+  height: 1rem; /* h-4 */
+  width: 1rem; /* w-4 */
+  color: #2563eb; /* text-blue-600 */
+  border-color: #d1d5db; /* border-gray-300 */
+  border-radius: 0.25rem; /* rounded */
+}
+
+.checkbox-label input[type="checkbox"].form-checkbox:focus {
+  /* Equivalent to focus:ring-blue-500 */
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  --tw-ring-offset-shadow: var(--tw-ring-inset) 0 0 0 var(--tw-ring-offset-width) var(--tw-ring-offset-color);
+  --tw-ring-shadow: var(--tw-ring-inset) 0 0 0 calc(2px + var(--tw-ring-offset-width)) var(--tw-ring-color);
+  box-shadow: var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow, 0 0 #0000);
+  --tw-ring-color: rgba(59, 130, 246, 0.5); /* blue-500 with opacity */
+}
+
+.checkbox-label .text-sm { /* For the span around the label text */
+  font-size: 0.875rem; /* text-sm */
+  color: #374151; /* text-gray-700 */
+}
+
+
+/* Run Analysis Button Styling */
+.run-analysis-button {
+  background-color: #2563eb; /* Primary blue from our theme */
+  color: white;
+  font-weight: 600; /* semibold */
+  padding: 0.75rem 1.5rem; /* py-3 px-6 */
+  border-radius: 0.375rem; /* rounded-md */
+  text-align: center;
+  width: 100%; /* Make button full width of its container */
+  transition: background-color 0.2s ease-in-out;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid transparent; /* For consistency */
+}
+
+.run-analysis-button:hover {
+  background-color: #1d4ed8; /* Darker shade of blue for hover */
+}
+
+.run-analysis-button:disabled {
+  background-color: #9ca3af; /* gray-400 */
+  color: #e5e7eb; /* gray-200 */
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.run-analysis-button:disabled:hover {
+  background-color: #9ca3af; /* Keep same background on hover when disabled */
+} 

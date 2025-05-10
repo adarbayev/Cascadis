@@ -45,7 +45,7 @@
 }
 
 .level-2 {
-  border-left: 4px solid #00A651 !important; /* Green for Site */
+  border-left: 4px solid #2563eb !important;
   background-clip: padding-box;
 }
 
@@ -70,7 +70,7 @@
 }
 
 .type-site, .type-office, .type-warehouse, .type-production-site {
-  background-color: #00A651;
+  background-color: #2563eb;
 }
 
 .node-code {
@@ -164,24 +164,17 @@
 
 /* Separate add-button styling */
 .add-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background-color: white;
-  border: 1px solid #4CAF50;
-  color: #4CAF50;
-  border-radius: 4px;
-  width: 28px;
-  height: 28px;
-  font-size: 16px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  padding: 0;
+  background-color: #2563eb;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-weight: 500;
+  transition: background 0.2s;
 }
 
 .add-button:hover {
-  background-color: #f0fff0;
+  background-color: #1743a7;
 }
 
 .edit-button:hover {
@@ -225,7 +218,7 @@
 }
 
 .form-container h2 {
-  color: #1F2937;
+  color: #172554;
   font-size: 1.25rem;
   margin-bottom: 1.5rem;
   padding-bottom: 0.75rem;
@@ -273,23 +266,18 @@
   margin-top: 2rem;
 }
 
-.save-button, .cancel-button {
-  padding: 0.75rem 1.5rem;
-  border-radius: 4px;
-  font-weight: 500;
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
 .save-button {
-  background-color: #10B981;
-  color: white;
+  background-color: #2563eb;
+  color: #fff;
   border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1.2rem;
+  font-weight: 500;
+  transition: background 0.2s;
 }
 
 .save-button:hover {
-  background-color: #059669;
+  background-color: #1743a7;
 }
 
 .cancel-button {
@@ -308,9 +296,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background-color: white;
-  border: 1px solid #4CAF50;
-  color: #4CAF50;
+  background-color: #fff;
+  border: 1px solid #2563eb;
+  color: #2563eb;
   border-radius: 4px;
   width: 28px;
   height: 28px;
@@ -323,5 +311,5 @@
 }
 
 .add-group-button:hover {
-  background-color: #f0fff0;
+  background-color: rgba(37,99,235,0.08);
 } 

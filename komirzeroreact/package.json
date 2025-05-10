@@ -1,5 +1,5 @@
 {
-  "name": "komir-zero",
+  "name": "cascadis",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -39,5 +39,5 @@
       "last 1 safari version"
     ]
   },
-  "homepage": "https://adarbayev.github.io/komir-zero-react/"
+  "homepage": "https://adarbayev.github.io/cascadis-react/"
 } 
