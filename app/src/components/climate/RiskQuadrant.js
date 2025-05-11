@@ -2,7 +2,7 @@ import React, { useState, useMemo } from 'react';
 
 // Helper to get color based on risk level (customize as needed)
 const getRiskLevelClass = (probIndex, impIndex) => {
-  const score = (probIndex + 1) * (impIndex + 1); // Simple score, can be more nuanced
+  // const score = (probIndex + 1) * (impIndex + 1); // Simple score, can be more nuanced // Unused variable
   if (impIndex >= 3 && probIndex >=3) return { text: 'Very High', bg: 'bg-red-600', textIntensity: 'text-white'}; // Dark red for very high
   if (impIndex >=2 && probIndex >=2) return { text: 'High', bg: 'bg-red-500', textIntensity: 'text-white' }; // Red
   if ((impIndex >=2 && probIndex >=1) || (impIndex >=1 && probIndex >=2)) return { text: 'Medium-High', bg: 'bg-orange-500', textIntensity: 'text-white' }; // Orange

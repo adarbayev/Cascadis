@@ -2,8 +2,8 @@ import React from 'react';
 import './IndicatorTable.css';
 import { INDICATORS, CONVERSION_FACTORS } from '../demoData';
 
-const unitOptions = ['kWh', 'MWh', 'GJ', 'L', 'm³', 'kg', 't', 'm²', 'USD'];
-const scopeTags = ['general', 'scope1', 'scope2'];
+// const unitOptions = ['kWh', 'MWh', 'GJ', 'L', 'm³', 'kg', 't', 'm²', 'USD']; // Unused
+// const scopeTags = ['general', 'scope1', 'scope2']; // Unused
 
 const getConversionFactorById = (id) => {
   if (!id) return null;

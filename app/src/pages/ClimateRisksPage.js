@@ -96,7 +96,7 @@ const ClimateRisksPage = () => {
         sites: analysisSitesData,
       });
       setIsLoading(false);
-      setActiveMainTab('riskAnalysis'); // Switch to Risk Analysis tab
+      setActiveMainTab('analysis'); // Switch to Risk Analysis tab
     }, 1000);
   };
 

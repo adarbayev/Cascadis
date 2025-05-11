@@ -144,7 +144,7 @@ function OrgStructureTable() {
       }
       setSelectedIndicators(checked);
     }
-  }, [editingNode]);
+  }, [editingNode, indicatorList, nodeIndicatorMapping]);
 
   // Toggle expand/collapse for a node
   const toggleExpand = (id) => {
@@ -421,8 +421,8 @@ function OrgStructureTable() {
   // Render the edit form
   const renderForm = () => {
     const isEditing = !!editingNode;
-    const isAddingGroup = newNodeForm.open && newNodeForm.level === 'Group';
-    const isAddingLegalEntity = newNodeForm.open && newNodeForm.level === 'Legal Entity';
+    // const isAddingGroup = newNodeForm.open && newNodeForm.level === 'Group';
+    // const isAddingLegalEntity = newNodeForm.open && newNodeForm.level === 'Legal Entity';
     const isAddingSite = newNodeForm.open && newNodeForm.level === 'Site';
     
     if (!isEditing && !newNodeForm.open) return null;
@@ -437,10 +437,10 @@ function OrgStructureTable() {
       <div className="form-overlay">
         <div className="form-container">
           <h2>{formTitle}</h2>
-          <div style={{ display: 'flex', gap: 16, marginBottom: 24 }}>
-            <button onClick={() => setTab('general')} aria-selected={tab==='general'} className={tab==='general' ? 'active-tab' : ''}>General Info</button>
+          <div style={{ display: 'flex', gap: 16, marginBottom: 24 }} role="tablist">
+            <button role="tab" onClick={() => setTab('general')} aria-selected={tab==='general'} className={tab==='general' ? 'active-tab' : ''}>General Info</button>
             {isEditing && (
-              <button onClick={() => setTab('indicators')} aria-selected={tab==='indicators'} className={tab==='indicators' ? 'active-tab' : ''}>Indicators</button>
+              <button role="tab" onClick={() => setTab('indicators')} aria-selected={tab==='indicators'} className={tab==='indicators' ? 'active-tab' : ''}>Indicators</button>
             )}
           </div>
           {tab === 'general' && (

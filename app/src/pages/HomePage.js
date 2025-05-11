@@ -1,10 +1,9 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import './HomePage.css';
 import { INVENTORY_YEARS, ORG_STRUCTURE, NODE_INDICATOR_MAPPING, QUESTIONNAIRE_DATA, INDICATORS, CONVERSION_FACTORS, EMISSION_FACTORS } from '../demoData';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title } from 'chart.js';
 import { Pie, Bar } from 'react-chartjs-2';
 import SiteEmissionsMap from '../components/dashboard/SiteEmissionsMap';
-import ESGNewsPanel from '../components/dashboard/ESGNewsPanel';
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement, Title);
 
@@ -157,36 +156,36 @@ const EmissionsBarChart = ({ title, breakdownData, color }) => {
 const HomePage = () => {
   // For now, let's assume baseline year is the first in INVENTORY_YEARS
   // This could be made selectable later if needed
-  const [selectedBaselineYearId, setSelectedBaselineYearId] = useState(INVENTORY_YEARS[0].id);
+  const [selectedBaselineYearId, /* setSelectedBaselineYearId */] = useState(INVENTORY_YEARS[0].id);
 
   // Potentially load QUESTIONNAIRE_DATA from localStorage if it can be modified elsewhere
   // For simplicity, using directly imported for now.
-  const [questionnaireData, setQuestionnaireData] = useState(QUESTIONNAIRE_DATA);
-  const [isEditMode, setIsEditMode] = useState(false);
+  const [questionnaireData, /* setQuestionnaireData */] = useState(QUESTIONNAIRE_DATA);
+  // const [isEditMode, setIsEditMode] = useState(false);
   
   // Re-calculate if year or data changes
   const emissionsData = useMemo(() => {
     return sumEmissionsForBaseline(selectedBaselineYearId, questionnaireData);
   }, [selectedBaselineYearId, questionnaireData]);
 
-  const handleSaveLayout = () => {
-    console.log("Save Layout button clicked - Placeholder action. Actual saving requires a backend and layout persistence logic.");
-    setIsEditMode(false);
-    alert("Layout saving is a placeholder. Actual functionality requires a library like React Grid Layout.");
-  };
+  // const handleSaveLayout = () => {
+  //   console.log("Save Layout button clicked - Placeholder action. Actual saving requires a backend and layout persistence logic.");
+  //   setIsEditMode(false);
+  //   alert("Layout saving is a placeholder. Actual functionality requires a library like React Grid Layout.");
+  // };
 
-  const handleCancelEditing = () => {
-    console.log("Cancel Editing button clicked - Placeholder action. No changes were actually made.");
-    setIsEditMode(false);
-  };
+  // const handleCancelEditing = () => {
+  //   console.log("Cancel Editing button clicked - Placeholder action. No changes were actually made.");
+  //   setIsEditMode(false);
+  // };
 
   // EditableTile now just adds edit mode border and icons, layout classes are applied directly to it from parent.
-  const EditableTile = ({ children, className = '' }) => (
-    <div className={`relative h-full ${className} ${isEditMode ? 'dashboard-item-editable' : ''}`}>
-      {children}
-      {isEditMode && <div className="edit-overlay-icons"></div>}
-    </div>
-  );
+  // const EditableTile = ({ children, className = '' }) => (
+  //   <div className={`relative h-full ${className} ${isEditMode ? 'dashboard-item-editable' : ''}`}>
+  //     {children}
+  //     {isEditMode && <div className="edit-overlay-icons"></div>}
+  //   </div>
+  // );
 
   // Power BI style layout
   return (

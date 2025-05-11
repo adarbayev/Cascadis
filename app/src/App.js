@@ -10,7 +10,6 @@ import SettingsPage from './pages/SettingsPage';
 import ProfilePage from './pages/ProfilePage';
 import ScenarioAnalysisPage from './pages/ScenarioAnalysisPage';
 import ClimateRisksPage from './pages/ClimateRisksPage';
-import { INVENTORY_YEARS, ORG_STRUCTURE, NODE_INDICATOR_MAPPING, INDICATORS } from './demoData';
 
 function App() {
   const [activeSection, setActiveSection] = useState('home');

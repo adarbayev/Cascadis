@@ -2,7 +2,7 @@ import React, { useState, useMemo, useRef } from 'react';
 import './PageStyles.css';
 import '../components/dashboard/TrajectoryDashboard.css';
 import { ORG_STRUCTURE, INDICATORS, NODE_INDICATOR_MAPPING, INVENTORY_YEARS, QUESTIONNAIRE_DATA, CONVERSION_FACTORS, EMISSION_FACTORS } from '../demoData';
-import { Line, Bar } from 'react-chartjs-2';
+import { Line /*, Bar*/ } from 'react-chartjs-2'; // Bar is unused
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -131,11 +131,11 @@ function getTargetPath(baseline, baseYear = 2024, reduction = 50, sbti = false) 
 }
 
 // Minimalist Pencil Icon (reuse from DataCollectionPage)
-const PencilIcon = () => (
-  <svg width="28" height="28" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M14.7 2.29a1 1 0 0 1 1.42 0l1.59 1.59a1 1 0 0 1 0 1.42l-9.3 9.3-3.3.71.71-3.3 9.3-9.3zM3 17h14v2H3v-2z" fill="#6B7280"/>
-  </svg>
-);
+// const PencilIcon = () => ( // Unused
+//   <svg width="28" height="28" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+//     <path d="M14.7 2.29a1 1 0 0 1 1.42 0l1.59 1.59a1 1 0 0 1 0 1.42l-9.3 9.3-3.3.71.71-3.3 9.3-9.3zM3 17h14v2H3v-2z" fill="#6B7280"/>
+//   </svg>
+// );
 
 function getBaselineByScopeAndSite(yearId, sessionEmissions) {
   const sites = flattenNodesSite(ORG_STRUCTURE);
@@ -164,7 +164,7 @@ function getBaselineByScopeAndSite(yearId, sessionEmissions) {
 function getScenarioTrajectory({ baseline, growth, baseYear, measures, sessionEmissions, yearId }) {
   // Get baseline by scope and by site
   const { scope1, scope2, bySite } = getBaselineByScopeAndSite(yearId, sessionEmissions);
-  const totalBaseline = scope1 + scope2;
+  // const totalBaseline = scope1 + scope2; // Unused variable
   // Precompute BAU values for all years
   const bau = getBAUTrajectory(baseline, growth.p1, growth.p2, growth.p3, baseYear);
   const years = [...bau.years];
@@ -245,9 +245,9 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
   const [chartTab, setChartTab] = useState('trajectory');
   
   // Refs for charts to enable export
-  const trajectoryChartRef = React.useRef(null);
-  const maccChartRef = React.useRef(null);
-  const payoffChartRef = React.useRef(null); // Added for potential export
+  const trajectoryChartRef = useRef(null);
+  const maccChartRef = useRef(null);
+  const payoffChartRef = useRef(null); // Added for potential export
   
   // State for export dropdown visibility
   const [showTrajectoryExport, setShowTrajectoryExport] = useState(false);
@@ -354,14 +354,14 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
       const nearTermTargetValue = baselineEmissionsTotal * (1 - 0.42);
       const longTermTargetValue = baselineEmissionsTotal * (1 - 0.90);
 
-      const nearTermData = bau.years.map(year => {
-        if (year <= nearTermTargetYear) return nearTermTargetValue;
-        // Optional: could make it go towards longTermTargetValue after nearTermTargetYear
-        // For now, just hold the near-term target level if we want to visualize it flatly
-        // Or, more accurately, the SBTi path would continue to decrease.
-        // The original getTargetPath already calculates a decreasing SBTi path, so this is for visualization of the levels.
-        return null; // Or make it part of a stepped line to 2050
-      });
+      // const nearTermData = bau.years.map(year => { // Unused variable
+      //   if (year <= nearTermTargetYear) return nearTermTargetValue;
+      //   // Optional: could make it go towards longTermTargetValue after nearTermTargetYear
+      //   // For now, just hold the near-term target level if we want to visualize it flatly
+      //   // Or, more accurately, the SBTi path would continue to decrease.
+      //   // The original getTargetPath already calculates a decreasing SBTi path, so this is for visualization of the levels.
+      //   return null; // Or make it part of a stepped line to 2050
+      // });
        // For simplicity, these lines will be flat. The main 'Target Path' shows the trajectory.
       datasets.push({
         label: 'SBTi Near-Term Target Level (-42% by ' + nearTermTargetYear + ')',
@@ -488,27 +488,27 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
     setShowMeasuresModal(false);
     setMeasuresScenario(null);
   };
-  const handleEditMeasure = (idx) => {
-    setEditMeasureIdx(idx);
-    setMeasureForm({ ...measures[idx] });
-  };
-  const handleSaveMeasure = () => {
-    const updated = [...measures];
-    if (editMeasureIdx !== null) {
-      updated[editMeasureIdx] = { ...measureForm };
-    } else {
-      updated.push({ ...measureForm });
-    }
-    setMeasures(updated);
-    setEditMeasureIdx(null);
-    setMeasureForm({
-      name: '', reduction: '', scope: 'Scope 1', startYear: 2025, permanent: 'No', lifecycle: 10, instant: 'Yes', capex: '', opex: '', groupLevel: true, node: ''
-    });
-  };
-  const handleRemoveMeasure = (idx) => {
-    setMeasures(measures.filter((_, i) => i !== idx));
-    setEditMeasureIdx(null);
-  };
+  // const handleEditMeasure = (idx) => { // Unused function
+  //   setEditMeasureIdx(idx);
+  //   setMeasureForm({ ...measures[idx] });
+  // };
+  // const handleSaveMeasure = () => { // Unused function
+  //   const updated = [...measures];
+  //   if (editMeasureIdx !== null) {
+  //     updated[editMeasureIdx] = { ...measureForm };
+  //   } else {
+  //     updated.push({ ...measureForm });
+  //   }
+  //   setMeasures(updated);
+  //   setEditMeasureIdx(null);
+  //   setMeasureForm({
+  //     name: '', reduction: '', scope: 'Scope 1', startYear: 2025, permanent: 'No', lifecycle: 10, instant: 'Yes', capex: '', opex: '', groupLevel: true, node: ''
+  //   });
+  // };
+  // const handleRemoveMeasure = (idx) => { // Unused function
+  //   setMeasures(measures.filter((_, i) => i !== idx));
+  //   setEditMeasureIdx(null);
+  // };
 
   // Org structure nodes for targeting
   const allNodes = useMemo(() => {

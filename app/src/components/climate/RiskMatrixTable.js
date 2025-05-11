@@ -3,7 +3,7 @@ import React from 'react';
 // Match this with the one in RiskQuadrant or make it a shared util
 const getRiskLevelDisplay = (probIndex, impIndex) => {
   // Simplified mapping for text and color - align with quadrant's visual style
-  const score = (probIndex + 1) * (impIndex + 1); // Example score, can be different
+  // const score = (probIndex + 1) * (impIndex + 1); // Example score, can be different // Unused variable
   // Colors are Tailwind CSS background classes
   if (impIndex >= 3 && probIndex >=3) return { text: 'Very High', color: 'bg-red-600 text-white', textColor: 'text-white'};
   if (impIndex >=2 && probIndex >=2) return { text: 'High', color: 'bg-red-500 text-white', textColor: 'text-white' };

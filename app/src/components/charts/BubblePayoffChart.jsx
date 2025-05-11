@@ -24,18 +24,18 @@ const bubbleStyleColors = [
 ];
 
 // Placeholder - replace with actual import or definition if available elsewhere
-const wedgeColors = [
-  'rgba(255, 99, 132, 0.8)',  // Red
-  'rgba(54, 162, 235, 0.8)',  // Blue
-  'rgba(255, 206, 86, 0.8)',  // Yellow
-  'rgba(75, 192, 192, 0.8)',  // Green
-  'rgba(153, 102, 255, 0.8)', // Purple
-  'rgba(255, 159, 64, 0.8)',  // Orange
-  'rgba(199, 199, 199, 0.8)', // Grey
-  'rgba(83, 102, 214, 0.8)',  // Indigo
-  'rgba(233, 30, 99, 0.8)',   // Pink
-  'rgba(0, 150, 136, 0.8)'    // Teal
-];
+// const wedgeColors = [  // This variable is unused
+//   'rgba(255, 99, 132, 0.8)',  // Red
+//   'rgba(54, 162, 235, 0.8)',  // Blue
+//   'rgba(255, 206, 86, 0.8)',  // Yellow
+//   'rgba(75, 192, 192, 0.8)',  // Green
+//   'rgba(153, 102, 255, 0.8)', // Purple
+//   'rgba(255, 159, 64, 0.8)',  // Orange
+//   'rgba(199, 199, 199, 0.8)', // Grey
+//   'rgba(83, 102, 214, 0.8)',  // Indigo
+//   'rgba(233, 30, 99, 0.8)',   // Pink
+//   'rgba(0, 150, 136, 0.8)'    // Teal
+// ];
 
 
 // <BubblePlot> component (React)
