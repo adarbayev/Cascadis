@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+// import './firebaseConfig'; // Initialize Firebase - REMOVED
 import App from './App';
 import './index.css';
 import './scripts/setupDefaultMapping';

@@ -162,54 +162,113 @@ function getBaselineByScopeAndSite(yearId, sessionEmissions) {
 }
 
 function getScenarioTrajectory({ baseline, growth, baseYear, measures, sessionEmissions, yearId }) {
-  // Get baseline by scope and by site
-  const { scope1, scope2, bySite } = getBaselineByScopeAndSite(yearId, sessionEmissions);
-  // const totalBaseline = scope1 + scope2; // Unused variable
-  // Precompute BAU values for all years
-  const bau = getBAUTrajectory(baseline, growth.p1, growth.p2, growth.p3, baseYear);
-  const years = [...bau.years];
-  // For each year, calculate emissions by scope
-  let values = [];
+  // Get initial baseline by scope and by site (remains similar)
+  // Note: 'baseline' passed to this function is totalBaselineEmissions. We need initialScope1Baseline and initialScope2Baseline.
+  const { scope1: initialScope1Baseline, scope2: initialScope2Baseline, bySite } = getBaselineByScopeAndSite(yearId, sessionEmissions);
+
+  // Precompute BAU values for all years for each scope (remains similar)
+  const bauScope1Trajectory = getBAUTrajectory(initialScope1Baseline, growth.p1, growth.p2, growth.p3, baseYear);
+  const bauScope2Trajectory = getBAUTrajectory(initialScope2Baseline, growth.p1, growth.p2, growth.p3, baseYear);
+  
+  const years = [...bauScope1Trajectory.years]; // Assuming bauScope1Trajectory.years is comprehensive
+  let scenarioValues = [];
+
   for (let i = 0; i < years.length; ++i) {
-    let year = years[i];
-    // Start with BAU for each scope
-    let valScope1 = getBAUTrajectory(scope1, growth.p1, growth.p2, growth.p3, baseYear).values[i];
-    let valScope2 = getBAUTrajectory(scope2, growth.p1, growth.p2, growth.p3, baseYear).values[i];
-    // Apply all measures
-    let reductionScope1 = 0, reductionScope2 = 0;
-    (measures || []).forEach(measure => {
+    let currentYear = years[i];
+    
+    // Start with this year's BAU emissions for each scope
+    let currentYearScope1Emissions = bauScope1Trajectory.values[i] !== undefined ? bauScope1Trajectory.values[i] : 0;
+    let currentYearScope2Emissions = bauScope2Trajectory.values[i] !== undefined ? bauScope2Trajectory.values[i] : 0;
+    
+    let appliedMeasureIdsThisYear = new Set(); // Track IDs of measures already applied in this year's sequence
+
+    const effectiveMeasures = measures || []; // Use the order as is in the scenario.measures array
+
+    for (const measure of effectiveMeasures) {
+      // For this logic to work, each 'measure' object MUST have a unique 'id' property.
+      // And an optional 'exclusiveWith' array of other measure IDs.
+      // Example: measure = { id: 'm1', ..., exclusiveWith: ['m2'] }
+
       const start = parseInt(measure.startYear) || baseYear;
-      const isPermanent = measure.permanent === 'Yes' || measure.isPermanent === true;
-      const measureLifecycle = isPermanent ? 99 : Math.max(1, parseInt(measure.lifecycle) || 1);
-      const isInstant = measure.instant === 'Yes' || measure.isInstant === true;
-      const rampYears = isInstant ? 1 : Math.max(1, parseInt(measure.rampYears) || 1);
-      if (year >= start && year < start + measureLifecycle) {
-        let eff = parseFloat(measure.reduction) || 0;
+      const isPermanent = measure.permanent === 'Yes' || measure.isPermanent === true; // Ensure boolean check for older data
+      const measureLifecycle = isPermanent ? (2051 - start) : Math.max(1, parseInt(measure.lifecycle) || 1); // Permanent lasts till 2050
+
+      // Is measure active this year?
+      if (currentYear >= start && currentYear < start + measureLifecycle) {
+        let isExcluded = false;
+        if (measure.id && measure.exclusiveWith && Array.isArray(measure.exclusiveWith)) {
+          for (const excludedById of measure.exclusiveWith) {
+            if (appliedMeasureIdsThisYear.has(excludedById)) {
+              isExcluded = true;
+              break;
+            }
+          }
+        }
+
+        if (isExcluded) {
+          // If measure is excluded but active, add its ID so it can exclude others if it's in *their* exclusiveWith list
+          if (measure.id) appliedMeasureIdsThisYear.add(measure.id);
+          continue; 
+        }
+
+        let percentageEffectiveness = parseFloat(measure.reduction) || 0;
+        if (isNaN(percentageEffectiveness)) percentageEffectiveness = 0;
+
+        const isInstant = measure.instant === 'Yes' || measure.isInstant === true; // Ensure boolean check
+        const rampYears = isInstant ? 1 : Math.max(1, parseInt(measure.rampYears) || 1);
+
         // Ramp up if not instant
-        if (!isInstant && year < start + rampYears) {
-          eff *= (year - start + 1) / rampYears;
+        if (!isInstant && currentYear < start + rampYears) {
+          percentageEffectiveness *= (currentYear - start + 1) / rampYears;
         }
-        // Scale for site-specific
-        let scale = 1;
-        if (!measure.groupLevel && measure.node && bySite[measure.node]) {
-          const siteBaseline = (measure.scope === 'Scope 1' ? bySite[measure.node].scope1 : bySite[measure.node].scope2);
-          const totalScope = measure.scope === 'Scope 1' ? scope1 : scope2;
-          scale = totalScope > 0 ? siteBaseline / totalScope : 0;
+
+        // Site-specific scaling:
+        // This is complex with sequential application. The original scaling was against initial baseline portions.
+        // For sequential, it should ideally be against the site's portion of the *current live residual emissions*.
+        // This requires knowing each site's live residual emissions, which adds significant complexity.
+        // For now, let's simplify: if a measure is site-specific, its % reduction applies to that site's
+        // share of the *initial* scope baseline, and this % is then converted to an absolute value
+        // against the *current total live residual* for that scope. This is an approximation.
+        // A more accurate model would track residual emissions per site per scope.
+        let siteSpecificScaleFactor = 1; // Assume group level by default
+        if (measure.groupLevel === false && measure.node && bySite[measure.node]) { // Check for groupLevel === false
+            const siteInitialBaselineForScope = measure.scope === 'Scope 1' ? (bySite[measure.node].scope1 || 0) : (bySite[measure.node].scope2 || 0);
+            const totalInitialBaselineForScope = measure.scope === 'Scope 1' ? initialScope1Baseline : initialScope2Baseline;
+            if (totalInitialBaselineForScope > 0) {
+                 // What portion of the total scope baseline did this site represent?
+                const siteShareOfInitialBaseline = siteInitialBaselineForScope / totalInitialBaselineForScope;
+                // The measure's % reduction is applied to this conceptual share.
+                // So, if measure reduces by 10%, and site is 50% of baseline, it's like a 5% reduction on total.
+                // This percentage is then applied to the live residual.
+                percentageEffectiveness = percentageEffectiveness * siteShareOfInitialBaseline;
+            } else {
+                percentageEffectiveness = 0; // No baseline to apply to for this site's scope
+            }
         }
-        eff = eff * scale;
-        // Apply to relevant scope
-        if (measure.scope === 'Scope 1') reductionScope1 += eff;
-        if (measure.scope === 'Scope 2') reductionScope2 += eff;
+        
+        percentageEffectiveness = Math.max(0, Math.min(percentageEffectiveness, 100));
+
+        let absoluteReductionOnScope = 0;
+        if (measure.scope === 'Scope 1' && currentYearScope1Emissions > 0) {
+          absoluteReductionOnScope = currentYearScope1Emissions * (percentageEffectiveness / 100);
+          currentYearScope1Emissions -= absoluteReductionOnScope;
+          currentYearScope1Emissions = Math.max(0, currentYearScope1Emissions);
+        } else if (measure.scope === 'Scope 2' && currentYearScope2Emissions > 0) {
+          absoluteReductionOnScope = currentYearScope2Emissions * (percentageEffectiveness / 100);
+          currentYearScope2Emissions -= absoluteReductionOnScope;
+          currentYearScope2Emissions = Math.max(0, currentYearScope2Emissions);
+        }
+        
+        // Add to applied set if it was active (even if 0% reduction, or excluded but still could exclude others)
+        // and had an ID.
+        if (measure.id) {
+            appliedMeasureIdsThisYear.add(measure.id);
+        }
       }
-    });
-    // Cap reductions at 100%
-    reductionScope1 = Math.min(reductionScope1, 100);
-    reductionScope2 = Math.min(reductionScope2, 100);
-    valScope1 = valScope1 * (1 - reductionScope1 / 100);
-    valScope2 = valScope2 * (1 - reductionScope2 / 100);
-    values.push(valScope1 + valScope2);
+    }
+    scenarioValues.push(currentYearScope1Emissions + currentYearScope2Emissions);
   }
-  return { years, values };
+  return { years, values: scenarioValues };
 }
 
 const ScenarioAnalysisPage = ({ sessionEmissions }) => {
@@ -530,7 +589,7 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
 
   // Add state for selected scenario for MACC chart
   const [selectedMACCScenario, setSelectedMACCScenario] = useState(null);
-  const [selectedMACCYear, setSelectedMACCYear] = useState(baseYear || 2030); // Ensure baseYear is available or default
+  const [selectedMACCYear, setSelectedMACCYear] = useState(2030); // Default to 2030
 
   // Create MACC chart data (updated style)
   const maccChartData = useMemo(() => {
@@ -1003,24 +1062,11 @@ const ScenarioAnalysisPage = ({ sessionEmissions }) => {
                 </div>
               </div>
               <div className="chart-container" style={{ height: '100%', minHeight: 400, flex: 1 }}>
-                {scenarios.length > 0 && scenarios[0].measures && scenarios[0].measures.length > 0 ? (
+                {scenarios.length > 0 && scenarios.find(s => s.id === (selectedMACCScenario || scenarios[0].id))?.measures?.length > 0 ? (
                   <Line ref={maccChartRef} data={maccChartData} options={maccChartOptions} />
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
-                    <p>Add measures to your scenarios to view MACC Analysis</p>
-                    <button 
-                      className="add-btn"
-                      style={{ marginTop: '16px' }}
-                      onClick={() => {
-                        if (scenarios.length > 0) {
-                          openEditMeasures(scenarios[0].id);
-                        } else {
-                          handleAddScenario();
-                        }
-                      }}
-                    >
-                      {scenarios.length > 0 ? 'Add Measures' : 'Add Scenario'}
-                    </button>
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', textAlign: 'center', color: '#6b7280' }}>
+                    <p>Add measures to your scenarios to view MACC Analysis.</p>
                   </div>
                 )}
               </div>
