@@ -12,7 +12,7 @@ const ReportingPage = () => {
       <div className="reporting-buttons-row">
         <button className="reporting-big-btn ebrd" onClick={() => handleReportButtonClick('EBRD')}>
           <span className="reporting-btn-icon">EBRD</span>
-          <span className="reporting-btn-label">EBRD Report</span>
+          <span className="reporting-btn-label"> Direct Annual E&S Report</span>
         </button>
       </div>
       <p className="reporting-disclaimer">
