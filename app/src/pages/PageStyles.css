@@ -105,9 +105,7 @@
   margin-bottom: 1.1rem;
   color: #3b82f6;
 }
-.cdp .reporting-btn-icon { color: #ef4444; }
-.gri .reporting-btn-icon { color: #10b981; }
-.csrd .reporting-btn-icon { color: #f59e0b; }
+.ebrd .reporting-btn-icon { color: #1e3a8a; }
 
 .reporting-btn-label {
   font-size: 1.15rem;
