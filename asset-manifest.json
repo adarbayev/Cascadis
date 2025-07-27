@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/Cascadis/static/css/main.4ee71763.css",
-    "main.js": "/Cascadis/static/js/main.03956175.js",
+    "main.css": "/Cascadis/static/css/main.0f74a019.css",
+    "main.js": "/Cascadis/static/js/main.b52ced7e.js",
     "index.html": "/Cascadis/index.html",
-    "main.4ee71763.css.map": "/Cascadis/static/css/main.4ee71763.css.map",
-    "main.03956175.js.map": "/Cascadis/static/js/main.03956175.js.map"
+    "main.0f74a019.css.map": "/Cascadis/static/css/main.0f74a019.css.map",
+    "main.b52ced7e.js.map": "/Cascadis/static/js/main.b52ced7e.js.map"
   },
   "entrypoints": [
-    "static/css/main.4ee71763.css",
-    "static/js/main.03956175.js"
+    "static/css/main.0f74a019.css",
+    "static/js/main.b52ced7e.js"
   ]
 }
